@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto8
+  pre_build:
+    commands:
+      - echo Skipping pre build stage
+  build:
+    commands:
+      - echo Building...
+      - echo Build started on `date`
+      - mvn install
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - timestamp=$(date +%Y-%m-%d-%H-%M-%S)
+      - VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+      - cp ./target/sso-$VERSION.jar .
+      - cp src/main/resources/swagger.yaml ./swagger-$VERSION.yaml
+      - cp ./target/sso-$VERSION.jar ./sso-dist.jar
+      - cp src/main/resources/swagger.yaml ./swagger-dist.yaml
+
+artifacts:
+  files:
+    - sso-*.jar
+    - swagger*.yaml
+  name: vape-sso-authentication-service
