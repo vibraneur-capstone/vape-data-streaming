@@ -14,8 +14,7 @@ public class JsonMapper {
     public String toJson(Object obj) {
         try {
             return mapper.writeValueAsString(obj);
-        }
-        catch (JsonProcessingException ex) {
+        } catch (JsonProcessingException ex) {
             log.error("toJson failed due to invalid argument provided");
             return "null";
         }
