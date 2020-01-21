@@ -1,0 +1,25 @@
+server:
+  port : 8823
+  servlet:
+    context-path: /${spring.application.name}/v1
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://admin-sensor-data:vj1s03DHLHOGSmnB@cluster0-vjrw6.mongodb.net/datahub?retryWrites=true&w=majority
+      database: datahub
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: consumer-group-${spring.application.name}
+      auto-offset-reset: earliest
+#      heartbeat-interval:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      client-id: ${spring.application.name}-producer
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      buffer-memory: 100MB
+      batch-size: 10MB
