@@ -21,7 +21,7 @@
         <jackson-version>2.9.10</jackson-version>
         <find-bugs-version>3.0.4</find-bugs-version>
         <junit-jupiter-version>5.3.2</junit-jupiter-version>
-        <swagger-codegen-maven-plugin-version>2.4.10</swagger-codegen-maven-plugin-version>
+        <swagger-codegen-maven-plugin-version>3.0.14</swagger-codegen-maven-plugin-version>
         <maven-pmd-plugin-version>3.9.0</maven-pmd-plugin-version>
         <pmd.failOnViolation>true</pmd.failOnViolation>
     </properties>
@@ -38,6 +38,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
         </dependency>
         <!-- kafka -->
         <dependency>
@@ -109,7 +114,7 @@
             <version>${swagger-annotations.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
+            <groupId>io.swagger.codegen.v3</groupId>
             <artifactId>swagger-codegen-maven-plugin</artifactId>
             <version>${swagger-codegen-maven-plugin-version}</version>
         </dependency>
@@ -159,7 +164,7 @@
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>${find-bugs-version}</version>
                 <configuration>
-                    <!--                    <excludeFilterFile>findbugs_filter.xml</excludeFilterFile>-->
+                    <excludeFilterFile>findbugs_filter.xml</excludeFilterFile>
                     <findbugsXmlOutput>true</findbugsXmlOutput>
                     <xmlOutput>true</xmlOutput>
                     <effort>Max</effort>
@@ -194,6 +199,42 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- swagger codegen -->
+            <plugin>
+                <groupId>io.swagger.codegen.v3</groupId>
+                <artifactId>swagger-codegen-maven-plugin</artifactId>
+                <version>${swagger-codegen-maven-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/dsp-rest-api-gateway.yaml</inputSpec>
+                            <output>${basedir}/target/generated-sources</output>
+                            <language>spring</language>
+                            <library>spring-boot</library>
+                            <modelPackage>com.vape.dsp.integration.swagger.v1.model</modelPackage>
+                            <apiPackage>com.vape.dsp.integration.swagger.v1.api</apiPackage>
+                            <generateApis>false</generateApis>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+<!--                            <typeMappings>-->
+<!--                                <typeMapping>java.lang.Double=java.math.BigDecimal</typeMapping>-->
+<!--                            </typeMappings>-->
+                            <configOptions>
+                                <sourceFolder>swagger</sourceFolder>
+                                <interfaceOnly>true</interfaceOnly>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <configPackage>com.vape.dsp.integration.swagger.v1.config</configPackage>
+                                <singleContentTypes>true</singleContentTypes>
+                                <useBeanValidation>true</useBeanValidation>
+                                <delegatePattern>true</delegatePattern>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- jacoco -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -205,6 +246,7 @@
                         <exclude>**/StreamingApplication.class</exclude>
                         <exclude>**/model/**</exclude>
                         <exclude>**/config/**</exclude>
+                        <exclude>**/StreamingApplication.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -229,17 +271,17 @@
                         <configuration>
                             <rules>
                                 <rule>
-                                    <element>CLASS</element>
+                                    <element>BUNDLE</element>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>20</minimum>
+                                            <minimum>0.80</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>1</minimum>
+                                            <minimum>0.85</minimum>
                                         </limit>
                                     </limits>
                                     <excludes>
@@ -249,38 +291,6 @@
                         </configuration>
                     </execution>
 
-                </executions>
-            </plugin>
-            <!-- swagger -->
-            <plugin>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>${swagger-codegen-maven-plugin-version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/dsp-rest-api-gateway.yaml</inputSpec>
-                            <output>${basedir}/target/generated-sources</output>
-                            <language>spring</language>
-                            <library>spring-boot</library>
-                            <modelPackage>com.vape.integration.dsp.swagger.v1.model</modelPackage>
-                            <generateSupportingFiles>false</generateSupportingFiles>
-                            <generateApis>false</generateApis>
-                            <configOptions>
-                                <sourceFolder>swagger</sourceFolder>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <configPackage>com.vape.integration.dsp.swagger.v1.config</configPackage>
-                                <singleContentTypes>true</singleContentTypes>
-                                <useBeanValidation>true</useBeanValidation>
-                                <delegatePattern>true</delegatePattern>
-                            </configOptions>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 

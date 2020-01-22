@@ -23,3 +23,11 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       buffer-memory: 100MB
       batch-size: 10MB
+com:
+  vape:
+    dsp:
+      integration:
+        uri: https://api.lambda.dsp-engine.vibraneur.com/v1/algorithms
+        kurtosis: ${com.vape.dsp.integration.uri}/kurtosis
+        fft: ${com.vape.dsp.integration.uri}/fft
+        rms: ${com.vape.dsp.integration.uri}/rms

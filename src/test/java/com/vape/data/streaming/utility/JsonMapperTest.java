@@ -1,4 +1,5 @@
 package com.vape.data.streaming.utility;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vape.data.streaming.model.FFTDataPointModel;
 import com.vape.data.streaming.model.KurtosisDataPointModel;
 import com.vape.data.streaming.model.RMSDataPointModel;
@@ -47,5 +48,17 @@ public class JsonMapperTest {
                 () -> assertEquals(expectedJsonStringThree, actualJsonStringThree),
                 () -> assertEquals(expectedJsonStringFour, actualJsonStringFour)
         );
+    }
+
+    @Test
+    @DisplayName("should convert to SensorDataPointModel object from json")
+    void test_to_object_conversion() throws JsonProcessingException {
+        // Arrange
+        String stringOne = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":\"2020-01-22T19:49:45.407517\",\"data\":null}";
+
+        SensorDataPointModel object = serviceToTest.toObject(stringOne, SensorDataPointModel.class);
+        assertAll("ensure OK",
+                () -> assertEquals(object.getId(), "567"));
+
     }
 }

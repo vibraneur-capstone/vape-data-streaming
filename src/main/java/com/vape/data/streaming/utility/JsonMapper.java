@@ -19,4 +19,8 @@ public class JsonMapper {
             return "null";
         }
     }
+
+    public <T> T toObject(String json, Class<T> obj) throws JsonProcessingException {
+        return mapper.readValue(json, obj);
+    }
 }
