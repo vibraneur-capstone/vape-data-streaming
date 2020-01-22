@@ -102,6 +102,17 @@
             <artifactId>commons-codec</artifactId>
             <version>1.11</version>
         </dependency>
+        <!-- swagger -->
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger-annotations.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-codegen-maven-plugin</artifactId>
+            <version>${swagger-codegen-maven-plugin-version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -168,6 +179,7 @@
                 <version>${maven-pmd-plugin-version}</version>
                 <configuration>
                     <excludes>
+                        <exclude>**/swagger/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -189,6 +201,7 @@
                 <version>0.8.2</version>
                 <configuration>
                     <excludes>
+                        <exclude>**/com/vape/integration/dsp/swagger/**</exclude>
                         <exclude>**/StreamingApplication.class</exclude>
                         <exclude>**/model/**</exclude>
                         <exclude>**/config/**</exclude>
@@ -200,13 +213,10 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
-                        <configuration>
-                            <destFile>${jacoco.ut.execution.data.file}</destFile>
-                        </configuration>
                     </execution>
                     <execution>
-                        <id>jacoco-site</id>
-                        <phase>verify</phase>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
@@ -219,17 +229,17 @@
                         <configuration>
                             <rules>
                                 <rule>
-                                    <element>BUNDLE</element>
+                                    <element>CLASS</element>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0</minimum>
+                                            <minimum>20</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0</minimum>
+                                            <minimum>1</minimum>
                                         </limit>
                                     </limits>
                                     <excludes>
@@ -241,6 +251,39 @@
 
                 </executions>
             </plugin>
+            <!-- swagger -->
+            <plugin>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-codegen-maven-plugin</artifactId>
+                <version>${swagger-codegen-maven-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/dsp-rest-api-gateway.yaml</inputSpec>
+                            <output>${basedir}/target/generated-sources</output>
+                            <language>spring</language>
+                            <library>spring-boot</library>
+                            <modelPackage>com.vape.integration.dsp.swagger.v1.model</modelPackage>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>false</generateApis>
+                            <configOptions>
+                                <sourceFolder>swagger</sourceFolder>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <configPackage>com.vape.integration.dsp.swagger.v1.config</configPackage>
+                                <singleContentTypes>true</singleContentTypes>
+                                <useBeanValidation>true</useBeanValidation>
+                                <delegatePattern>true</delegatePattern>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
     </build>
