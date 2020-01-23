@@ -45,12 +45,12 @@ public class DataPointConsumerTest {
         // Arrange
         String kafkaMessage = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"data\":[123,321]}";
         SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("567").sensorId("123").build();
-        RMSDataPointModel constructedModel = RMSDataPointModel.builder().sensorDataPointId("567").data(new BigDecimal(1)).build();
-        BigDecimal computedRMS = new BigDecimal(1.3);
+        RMSDataPointModel constructedModel = RMSDataPointModel.builder().sensorDataPointId("567").data(1.0).build();
+        Double computedRMS = 1.3;
 
         when(mapper.toObject(kafkaMessage, SensorDataPointModel.class)).thenReturn(sensorDataPointModel);
         doReturn(constructedModel).when(serviceToTest).constructRMSDataPointModel(sensorDataPointModel, computedRMS);
-        when(dspEngineService.computeRMS(sensorDataPointModel)).thenReturn(computedRMS);
+        when(dspEngineService.computeRMS(sensorDataPointModel)).thenReturn(new BigDecimal(computedRMS));
 
         // Act
         serviceToTest.computeRMS(kafkaMessage);
@@ -68,12 +68,12 @@ public class DataPointConsumerTest {
         // Arrange
         String kafkaMessage = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"data\":[123,321]}";
         SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("567").sensorId("123").build();
-        KurtosisDataPointModel constructedModel = KurtosisDataPointModel.builder().sensorDataPointId("567").data(new BigDecimal(1)).build();
-        BigDecimal computedKurtosis = new BigDecimal(1.3);
+        KurtosisDataPointModel constructedModel = KurtosisDataPointModel.builder().sensorDataPointId("567").data(1.0).build();
+        Double computedKurtosis = 1.3;
 
         when(mapper.toObject(kafkaMessage, SensorDataPointModel.class)).thenReturn(sensorDataPointModel);
         doReturn(constructedModel).when(serviceToTest).constructKurtosisDataPointModel(sensorDataPointModel, computedKurtosis);
-        when(dspEngineService.computeKurtosis(sensorDataPointModel)).thenReturn(computedKurtosis);
+        when(dspEngineService.computeKurtosis(sensorDataPointModel)).thenReturn(new BigDecimal(1.3));
 
         // Act
         serviceToTest.computeKurtosis(kafkaMessage);
@@ -90,7 +90,7 @@ public class DataPointConsumerTest {
     void test_KurtosisDataPointModel() {
         // Arrange
         SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("567").build();
-        BigDecimal computedData = new BigDecimal(123);
+        Double computedData = 123.0;
 
         // Act
         KurtosisDataPointModel actualModel = serviceToTest.constructKurtosisDataPointModel(sensorDataPointModel, computedData);
@@ -108,7 +108,7 @@ public class DataPointConsumerTest {
     void test_RMSDataPointModel() {
         // Arrange
         SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("123").build();
-        BigDecimal computedData = new BigDecimal(321);
+        Double computedData = 321.0;
 
         // Act
         RMSDataPointModel actualModel = serviceToTest.constructRMSDataPointModel(sensorDataPointModel, computedData);

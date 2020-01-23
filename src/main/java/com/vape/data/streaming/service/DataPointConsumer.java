@@ -36,7 +36,7 @@ public class DataPointConsumer {
         log.info(String.format(LOG_MSG, message));
         SensorDataPointModel dataPointModel = mapper.toObject(message, SensorDataPointModel.class);
         BigDecimal computedRMS = dspEngineService.computeRMS(dataPointModel);
-        RMSDataPointModel rmsDataPointModel = constructRMSDataPointModel(dataPointModel, computedRMS);
+        RMSDataPointModel rmsDataPointModel = constructRMSDataPointModel(dataPointModel, computedRMS.doubleValue());
         dataPointProducer.publishRMS(rmsDataPointModel);
     }
 
@@ -45,11 +45,11 @@ public class DataPointConsumer {
         log.info(String.format(LOG_MSG, message));
         SensorDataPointModel dataPointModel = mapper.toObject(message, SensorDataPointModel.class);
         BigDecimal computedKurtosis = dspEngineService.computeKurtosis(dataPointModel);
-        KurtosisDataPointModel kurtosisDataPointModel = constructKurtosisDataPointModel(dataPointModel, computedKurtosis);
+        KurtosisDataPointModel kurtosisDataPointModel = constructKurtosisDataPointModel(dataPointModel, computedKurtosis.doubleValue());
         dataPointProducer.publishKurtosis(kurtosisDataPointModel);
     }
 
-    KurtosisDataPointModel constructKurtosisDataPointModel(SensorDataPointModel dataPointModel, BigDecimal computedData) {
+    KurtosisDataPointModel constructKurtosisDataPointModel(SensorDataPointModel dataPointModel, Double computedData) {
         return KurtosisDataPointModel.builder()
                 .sensorDataPointId(dataPointModel.getId())
                 .timestamp(LocalDateTime.now().toString())
@@ -57,7 +57,7 @@ public class DataPointConsumer {
                 .build();
     }
 
-    RMSDataPointModel constructRMSDataPointModel(SensorDataPointModel dataPointModel, BigDecimal computedData) {
+    RMSDataPointModel constructRMSDataPointModel(SensorDataPointModel dataPointModel, Double computedData) {
         return RMSDataPointModel.builder()
                 .sensorDataPointId(dataPointModel.getId())
                 .timestamp(LocalDateTime.now().toString())
