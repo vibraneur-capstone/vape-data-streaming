@@ -51,6 +51,21 @@ public class JsonMapperTest {
     }
 
     @Test
+    @DisplayName("should return null and not throw exception")
+    void test_to_json_bad_boy() {
+        // Arrange
+        SensorDataPointModel badModel = null;
+
+        // Act
+        String actualJsonStringOne = serviceToTest.toJson(badModel);
+
+        // Assert
+        assertAll("ensure OK",
+                () -> assertEquals("null", actualJsonStringOne)
+        );
+    }
+
+    @Test
     @DisplayName("should convert to SensorDataPointModel object from json")
     void test_to_object_conversion() throws JsonProcessingException {
         // Arrange
@@ -59,6 +74,5 @@ public class JsonMapperTest {
         SensorDataPointModel object = serviceToTest.toObject(stringOne, SensorDataPointModel.class);
         assertAll("ensure OK",
                 () -> assertEquals(object.getId(), "567"));
-
     }
 }
