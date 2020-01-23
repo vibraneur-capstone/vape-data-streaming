@@ -53,7 +53,7 @@ public class DataPointConsumer {
         return KurtosisDataPointModel.builder()
                 .sensorDataPointId(dataPointModel.getId())
                 .timestamp(LocalDateTime.now().toString())
-                .data(computedData)
+                .data(computedData.doubleValue())
                 .build();
     }
 
@@ -61,7 +61,7 @@ public class DataPointConsumer {
         return RMSDataPointModel.builder()
                 .sensorDataPointId(dataPointModel.getId())
                 .timestamp(LocalDateTime.now().toString())
-                .data(computedData)
+                .data(computedData.doubleValue())
                 .build();
     }
 }

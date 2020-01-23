@@ -45,7 +45,7 @@ public class DataPointConsumerTest {
         // Arrange
         String kafkaMessage = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"data\":[123,321]}";
         SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("567").sensorId("123").build();
-        RMSDataPointModel constructedModel = RMSDataPointModel.builder().sensorDataPointId("567").data(new BigDecimal(1)).build();
+        RMSDataPointModel constructedModel = RMSDataPointModel.builder().sensorDataPointId("567").data(1.0).build();
         BigDecimal computedRMS = new BigDecimal(1.3);
 
         when(mapper.toObject(kafkaMessage, SensorDataPointModel.class)).thenReturn(sensorDataPointModel);
@@ -68,7 +68,7 @@ public class DataPointConsumerTest {
         // Arrange
         String kafkaMessage = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"data\":[123,321]}";
         SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("567").sensorId("123").build();
-        KurtosisDataPointModel constructedModel = KurtosisDataPointModel.builder().sensorDataPointId("567").data(new BigDecimal(1)).build();
+        KurtosisDataPointModel constructedModel = KurtosisDataPointModel.builder().sensorDataPointId("567").data(1.0).build();
         BigDecimal computedKurtosis = new BigDecimal(1.3);
 
         when(mapper.toObject(kafkaMessage, SensorDataPointModel.class)).thenReturn(sensorDataPointModel);
@@ -98,7 +98,7 @@ public class DataPointConsumerTest {
         // Assert
         assertAll("ensure proper mapping",
                 () -> assertNotNull(actualModel.getTimestamp()),
-                () -> assertEquals(computedData, actualModel.getData()),
+                () -> assertEquals(computedData.doubleValue(), actualModel.getData()),
                 () -> assertEquals("567", actualModel.getSensorDataPointId())
                 );
     }
@@ -116,7 +116,7 @@ public class DataPointConsumerTest {
         // Assert
         assertAll("ensure proper mapping",
                 () -> assertNotNull(actualModel.getTimestamp()),
-                () -> assertEquals(computedData, actualModel.getData()),
+                () -> assertEquals(computedData.doubleValue(), actualModel.getData()),
                 () -> assertEquals("123", actualModel.getSensorDataPointId())
         );
     }

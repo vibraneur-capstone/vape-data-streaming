@@ -3,9 +3,6 @@ package com.vape.data.streaming.service;
 import com.vape.data.streaming.config.DspEngineConfig;
 import com.vape.data.streaming.model.SensorDataPointModel;
 import com.vape.dsp.integration.swagger.v1.model.DspDataInput;
-import com.vape.dsp.integration.swagger.v1.model.SingleDigitDspDataOutput;
-import com.vape.dsp.integration.swagger.v1.model.SingleDigitResultEncapsulation;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,14 +11,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -100,10 +94,9 @@ public class DspEngineServiceTest {
     @DisplayName("shoud return HttpEntity")
     void test_getRequestEntity() {
         // Arrange
-        List<BigDecimal> data= new ArrayList<>();
-        data.add(new BigDecimal(321));
-        data.add(new BigDecimal(213));
-        data.add(new BigDecimal(312));
+        List<Double> data= new ArrayList<>();
+        data.add(321.90);
+        data.add(123.90);
         SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().data(data).build();
 
         // Act
@@ -111,7 +104,8 @@ public class DspEngineServiceTest {
 
         // Assert
         assertAll("ensure ok",
-                () -> assertEquals(data, actualEntity.getBody().getData())
+                () -> assertEquals(data.get(0), Objects.requireNonNull(actualEntity.getBody()).getData().get(0).doubleValue()),
+                () -> assertEquals(data.get(1), Objects.requireNonNull(actualEntity.getBody()).getData().get(1).doubleValue())
         );
     }
 }
