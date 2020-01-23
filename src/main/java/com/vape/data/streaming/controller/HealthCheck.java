@@ -36,7 +36,7 @@ public class HealthCheck {
             consumes = "application/json",
             method = RequestMethod.POST)
     public ResponseEntity<String> testProducer(@Valid @RequestBody DspDataInput input) {
-        SensorDataPointModel sensor = SensorDataPointModel.builder().sensorHubId("12345").sensorId("54321").data(input.getData()).build();
+        SensorDataPointModel sensor = SensorDataPointModel.builder().sensorHubId("sensor hub one").sensorId("sensor one").data(input.getData()).build();
         producer.publishSensorData(sensor);
         return new ResponseEntity<>(config.getBootstrapServers(), HttpStatus.OK);
     }

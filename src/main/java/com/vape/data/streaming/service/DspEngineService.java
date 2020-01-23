@@ -19,13 +19,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class DspEngineService {
 
-    private final DspEngineConfig rest;
+    private final DspEngineConfig config;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     public BigDecimal computeKurtosis(SensorDataPointModel sensorDataPoint) {
         HttpEntity entity = getRequestEntity(sensorDataPoint);
-        ResponseEntity<SingleDigitDspDataOutput> result = restTemplate.exchange(rest.getKurtosis(), HttpMethod.POST, entity, SingleDigitDspDataOutput.class);
+        ResponseEntity<SingleDigitDspDataOutput> result = restTemplate.exchange(config.getKurtosis(), HttpMethod.POST, entity, SingleDigitDspDataOutput.class);
         if (result.getBody() != null && result.getBody().getBody() != null) {
             return result.getBody().getBody().getResult();
         }
@@ -37,7 +37,7 @@ public class DspEngineService {
 
     public BigDecimal computeRMS(SensorDataPointModel sensorDataPoint) throws IllegalStateException {
         HttpEntity entity = getRequestEntity(sensorDataPoint);
-        ResponseEntity<SingleDigitDspDataOutput> result = restTemplate.exchange(rest.getRms(), HttpMethod.POST, entity, SingleDigitDspDataOutput.class);
+        ResponseEntity<SingleDigitDspDataOutput> result = restTemplate.exchange(config.getRms(), HttpMethod.POST, entity, SingleDigitDspDataOutput.class);
         if(result.getBody() != null && result.getBody().getBody() != null) {
             return result.getBody().getBody().getResult();
         }
@@ -47,7 +47,7 @@ public class DspEngineService {
         }
     }
 
-    private HttpEntity<DspDataInput> getRequestEntity(SensorDataPointModel sensorDataPoint) {
+    HttpEntity<DspDataInput> getRequestEntity(SensorDataPointModel sensorDataPoint) {
         // TODO: Add Header
         return new HttpEntity<>(new DspDataInput().data(sensorDataPoint.getData()));
     }
