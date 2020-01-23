@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,6 +51,7 @@ public class DspEngineService {
 
     HttpEntity<DspDataInput> getRequestEntity(SensorDataPointModel sensorDataPoint) {
         // TODO: Add Header
-        return new HttpEntity<>(new DspDataInput().data(sensorDataPoint.getData()));
+        List<BigDecimal> dataPoint = sensorDataPoint.getData().stream().map(BigDecimal::new).collect(Collectors.toList());
+        return new HttpEntity<>(new DspDataInput().data(dataPoint));
     }
 }
