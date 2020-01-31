@@ -14,10 +14,10 @@ paths:
       tags:
         - Publish raw sensor data to Kafka
       summary: Publish raw sensor data to Kafka through this endpoint
-              
+
       produces:
         - application/json
-        
+
       parameters:
         - in: query
           name: id
@@ -30,7 +30,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/SensorData'
-          
+
       responses:
         '200':
           description: Successful operation
@@ -47,7 +47,7 @@ paths:
           description: Server Error
           schema:
             $ref: '#/definitions/Exception'
-            
+
   '/dsp/data/status':
     get:
       tags:
@@ -55,7 +55,7 @@ paths:
       summary: include counts, and data range
       produces: 
         - application/json
-      
+
       parameters: 
         - in: query
           name: from
@@ -67,7 +67,7 @@ paths:
           required: true
           description: the end date in number format, 0 or NULL indicate from the very ending
           type: integer
-      
+
       responses:
         '200':
           description: Successful operation
@@ -84,7 +84,7 @@ paths:
           description: Server Error
           schema:
             $ref: '#/definitions/Exception'
-        
+
   '/dsp/data/{type}':
     get:
       tags:
@@ -115,7 +115,7 @@ paths:
           required: true
           description: the end date in number format, 0 or NULL indicate from the very ending
           type: integer
-      
+
       responses:
         '200':
           description: Successful operation
@@ -132,7 +132,7 @@ paths:
           description: Server Error
           schema:
             $ref: '#/definitions/Exception'
-  
+
   '/healthcheck':
     get:
       tags: 
@@ -170,7 +170,7 @@ definitions:
         items:
           type: number
         example: [0.134, 0.435, 0.532, 0.524]
-  
+
   DspDataStatus: 
     type: object
     properties:
@@ -182,7 +182,7 @@ definitions:
         example: 1631563214
       counts: 
        $ref: '#/definitions/Count'
-       
+
   Health:
     type: object
     properties:
@@ -191,7 +191,7 @@ definitions:
         enum: 
           - UP
           - DOWN
-       
+
   DataList:
     type: object
     properties:
@@ -208,8 +208,8 @@ definitions:
        type: array
        items: 
         type: number
-        example: [2.345, 1.567, 5.396, 3.664, 2.569]
-        
+        example: 2.345, 1.567, 5.396, 3.664, 2.569
+
   Count: 
     type: object
     properties:
@@ -225,7 +225,7 @@ definitions:
       fft:
         type: integer
         example: 3294
-      
+
   BadRequestException:
     type: object
     properties:
