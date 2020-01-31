@@ -52,7 +52,7 @@ paths:
     get:
       tags:
         - Query status of computed data by DSP within specified range
-      summary: include counts, datapoint id for FFT, and range
+      summary: include counts, and data range
       produces: 
         - application/json
       
@@ -89,7 +89,7 @@ paths:
     get:
       tags:
         - Query historical DSP Engine computed data within specified range
-      summary: computed RMS
+      summary: computed data (RMS, FFT, or Kurtosis)
       produces: 
         - application/json
       parameters: 
