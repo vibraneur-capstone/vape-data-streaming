@@ -6,8 +6,9 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://admin-sensor-data:vj1s03DHLHOGSmnB@cluster0-vjrw6.mongodb.net/datahub?retryWrites=true&w=majority
+#      uri: mongodb+srv://admin-sensor-data:vj1s03DHLHOGSmnB@cluster0-vjrw6.azure.mongodb.net/datahub?retryWrites=true&w=majority
       database: datahub
+      uri: mongodb://localhost:27017/datahub
   kafka:
     consumer:
       bootstrap-servers: localhost:9092
