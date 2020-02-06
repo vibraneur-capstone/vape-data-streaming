@@ -1,0 +1,250 @@
+swagger: '2.0'
+info:
+  description: Kafka Datapipline integration for V.A.P.E
+  title: V.A.P.E Data Streaming
+  version: 0.0.2 snapshot
+host: localhost:8823
+basePath: /streaming/v1
+schemes:
+  - http
+  - https
+paths:
+  '/sensor':
+    post:
+      tags:
+        - Publish raw sensor data to Kafka
+      summary: Publish raw sensor data to Kafka through this endpoint
+
+      produces:
+        - application/json
+
+      parameters:
+        - in: query
+          name: id
+          required: true
+          type: string
+          description: The id of the sensor
+        - in: body
+          name: data
+          description: Object that encapsulate raw data point
+          required: true
+          schema:
+            $ref: '#/definitions/SensorData'
+
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/SensorData'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+
+  '/dsp/data/status':
+    get:
+      tags:
+        - Query status of computed data by DSP within specified range
+      summary: include counts, and data range
+      produces: 
+        - application/json
+
+      parameters: 
+        - in: query
+          name: from
+          required: true
+          type: integer
+          description: the start date in number format, 0 or NULL indicate from the very begining
+        - in: query
+          name: to
+          required: true
+          description: the end date in number format, 0 or NULL indicate from the very ending
+          type: integer
+
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/DspDataStatus'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+
+  '/dsp/data/{type}':
+    get:
+      tags:
+        - Query historical DSP Engine computed data within specified range
+      summary: computed data (RMS, FFT, or Kurtosis)
+      produces: 
+        - application/json
+      parameters: 
+        - in: path
+          name: type
+          required: true
+          type: string
+          enum:
+            - FFT
+            - RMS
+            - KURTOSIS
+        - in: query
+          name: sensorId
+          type: string
+          required: true
+        - in: query
+          name: from
+          required: true
+          type: integer
+          description: the start date in number format, 0 or NULL indicate from the very begining
+        - in: query
+          name: to
+          required: true
+          description: the end date in number format, 0 or NULL indicate from the very ending
+          type: integer
+
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/DataList'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+
+  '/healthcheck':
+    get:
+      tags: 
+       - API health check endpoint
+      summary: health check
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/Health'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+definitions:
+
+  SensorData:
+    type: object
+    properties:
+      sensorId: 
+        type: string
+        readOnly: false
+        example: 0x438719834edsa77dh432
+      data:
+        type: array
+        items:
+          type: number
+        example: [0.134, 0.435, 0.532, 0.524]
+
+  DspDataStatus: 
+    type: object
+    properties:
+      from:
+        type: integer
+        example: 1531563214
+      to:
+        type: integer
+        example: 1631563214
+      counts: 
+       $ref: '#/definitions/Count'
+
+  Health:
+    type: object
+    properties:
+      status:
+        type: string
+        enum: 
+          - UP
+          - DOWN
+
+  DataList:
+    type: object
+    properties:
+      from:
+        type: integer
+        example: 1531563214
+      to:
+        type: integer
+        example: 1631563214
+      sensorId:
+        type: string
+        example: 0b515ds04320fd342feg4hg
+      data: 
+       type: array
+       items: 
+        type: number
+        example: 2.345, 1.567, 5.396, 3.664, 2.569
+
+  Count: 
+    type: object
+    properties:
+      total:
+        type: integer
+        example: 8997
+      rms: 
+        type: integer
+        example: 3294
+      kurtosis:
+        type: integer
+        example: 3294
+      fft:
+        type: integer
+        example: 3294
+
+  BadRequestException:
+    type: object
+    properties:
+      message:
+        type: integer
+      errorCode:
+        type: string
+        readOnly: false
+    required:
+      - message
+      - errorCode
+  Exception:
+    type: object
+    properties:
+      message:
+        type: integer
+      errorCode:
+        type: string
+        readOnly: false
+    required:
+      - message
+      - errorCode
