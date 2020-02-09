@@ -31,4 +31,4 @@ com:
         kurtosis: ${com.vape.dsp.integration.uri}/kurtosis
         fft: ${com.vape.dsp.integration.uri}/fft
         rms: ${com.vape.dsp.integration.uri}/rms
-        api-key: quGExBzlcX12uPC3EiaZBau8VtQKWf9Gy6yEBZ6
+        api-key: test-key
