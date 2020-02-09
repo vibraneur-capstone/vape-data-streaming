@@ -12,4 +12,5 @@ public class DspEngineConfig {
     private String kurtosis;
     private String fft;
     private String rms;
+    private String apiKey;
 }
