@@ -1,7 +1,9 @@
 package com.vape.data.streaming.controller;
 
+import com.vape.data.streaming.mapper.DtoMapper;
 import com.vape.data.streaming.model.SensorDataPointModel;
 import com.vape.data.streaming.service.DataPointProducer;
+import com.vape.data.streaming.swagger.v1.model.SensorData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +17,7 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class SensorDataInputControllerTest {
 
@@ -26,6 +27,9 @@ public class SensorDataInputControllerTest {
     @InjectMocks
     private SensorDataInputController controllerToTest;
 
+    @Mock
+    private DtoMapper mapper;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -33,19 +37,58 @@ public class SensorDataInputControllerTest {
 
     @Test
     @DisplayName("should publish sensor data and persist in mongo")
-    void test_controller() {
+    void test_sensorPost() {
         // Arrange
-        SensorDataPointModel sensorDataInput = SensorDataPointModel.builder().data(new ArrayList<>()).build();
+        String sensorId = "test id";
+        SensorData sensorData = new SensorData().sensorId(sensorId).data(new ArrayList<>());
+        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().sensorId(sensorId).data(new ArrayList<>()).build();
+        when(mapper.toSensorDataPointModel(sensorData)).thenReturn(sensorDataPointModel);
 
         // Act
-        ResponseEntity<SensorDataPointModel> actualResponse = controllerToTest.testProducer(sensorDataInput);
+        ResponseEntity<SensorData> actualResponse = controllerToTest.sensorPost(sensorData, sensorId);
 
         // Assert
-        verify(producer, times(1)).publishSensorData(sensorDataInput);
+        verify(producer, times(1)).publishSensorData(sensorDataPointModel);
 
         assertAll("ensure ok",
                 () -> assertEquals(HttpStatus.OK, actualResponse.getStatusCode()),
-                () -> assertEquals(sensorDataInput, actualResponse.getBody())
+                () -> assertEquals(sensorData, actualResponse.getBody())
                 );
+    }
+
+    @Test
+    @DisplayName("should return 400 if sensorId in body is null")
+    void test_bad_request() {
+        // Arrange
+        SensorData sensorData = new SensorData().sensorId(null).data(new ArrayList<>());
+
+        // Act
+        ResponseEntity<SensorData> actualResponse = controllerToTest.sensorPost(sensorData, "sensorId");
+
+        // Assert
+        verify(producer, times(0)).publishSensorData(any());
+
+        assertAll("ensure ok",
+                () -> assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode()),
+                () -> assertEquals(sensorData, actualResponse.getBody())
+        );
+    }
+
+    @Test
+    @DisplayName("should return 400 if sensorId in body is equal to query")
+    void test_bad_request_case_two() {
+        // Arrange
+        SensorData sensorData = new SensorData().sensorId("test").data(new ArrayList<>());
+
+        // Act
+        ResponseEntity<SensorData> actualResponse = controllerToTest.sensorPost(sensorData, "sensorId");
+
+        // Assert
+        verify(producer, times(0)).publishSensorData(any());
+
+        assertAll("ensure ok",
+                () -> assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode()),
+                () -> assertEquals(sensorData, actualResponse.getBody())
+        );
     }
 }

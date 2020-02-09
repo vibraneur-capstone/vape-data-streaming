@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JsonMapper {
 
-    private final static ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public String toJson(Object obj) {
         try {
