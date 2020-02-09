@@ -33,4 +33,4 @@ com:
         crest: ${com.vape.dsp.integration.uri}/crest
         shape: ${com.vape.dsp.integration.uri}/shape
         rms: ${com.vape.dsp.integration.uri}/rms
-        api-key: test-key
+        api-key: quGExBzlcX12uPC3EiaZBau8VtQKWf9Gy6yEBZ6
