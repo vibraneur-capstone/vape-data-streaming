@@ -30,4 +30,6 @@ com:
         uri: https://api.lambda.dsp-engine.vibraneur.com/v1/algorithms
         kurtosis: ${com.vape.dsp.integration.uri}/kurtosis
         fft: ${com.vape.dsp.integration.uri}/fft
+        crest: ${com.vape.dsp.integration.uri}/crest
+        shape: ${com.vape.dsp.integration.uri}/shape
         rms: ${com.vape.dsp.integration.uri}/rms
