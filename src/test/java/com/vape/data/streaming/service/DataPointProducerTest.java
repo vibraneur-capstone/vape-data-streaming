@@ -1,12 +1,7 @@
 package com.vape.data.streaming.service;
 
-import com.vape.data.streaming.model.FFTDataPointModel;
-import com.vape.data.streaming.model.KurtosisDataPointModel;
-import com.vape.data.streaming.model.RMSDataPointModel;
-import com.vape.data.streaming.model.SensorDataPointModel;
-import com.vape.data.streaming.repository.KurtosisDataPointModelRepository;
-import com.vape.data.streaming.repository.RMSDataPointModelRepository;
-import com.vape.data.streaming.repository.SensorDataPointModelRepository;
+import com.vape.data.streaming.model.*;
+import com.vape.data.streaming.repository.*;
 import com.vape.data.streaming.utility.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,6 +37,12 @@ public class DataPointProducerTest {
 
     @Mock
     private KurtosisDataPointModelRepository kurtosisDataPointModelRepository;
+
+    @Mock
+    private CrestDataPointModelRepository crestDataPointModelRepository;
+
+    @Mock
+    private ShapeDataPointModelRepository shapeDataPointModelRepository;
 
     @Test
     @DisplayName("should store raw data in mongo then publish stored data to topic: SENSOR")
@@ -119,5 +120,45 @@ public class DataPointProducerTest {
         // Assert
         verify(kurtosisDataPointModelRepository, times(1)).save(kurtosisDataPointModel);
         verify(kafkaTemplate, times(1)).send(eq("KURTOSIS"), eq(expectedMessage));
+    }
+
+    @Test
+    @DisplayName("should publish crest and persist in mongo")
+    void test_publish_publishCrest_method() {
+        // Arrange
+        CrestDataPointModel crestDataPointModel = CrestDataPointModel.builder().sensorDataPointId("123").build();
+        CrestDataPointModel savedDataPointModel = CrestDataPointModel.builder().sensorDataPointId("123").id("test id").build();
+
+        String expectedMessage = "This is a test message benxin is the best";
+
+        when(crestDataPointModelRepository.save(crestDataPointModel)).thenReturn(savedDataPointModel);
+        when(mapper.toJson(savedDataPointModel)).thenReturn(expectedMessage);
+
+        // Act
+        serviceToTest.publishCrest(crestDataPointModel);
+
+        // Assert
+        verify(crestDataPointModelRepository, times(1)).save(crestDataPointModel);
+        verify(kafkaTemplate, times(1)).send(eq("CREST"), eq(expectedMessage));
+    }
+
+    @Test
+    @DisplayName("should publish shape and persist in mongo")
+    void test_publish_publishShape_method() {
+        // Arrange
+        ShapeDataPointModel shapeDataPointModel = ShapeDataPointModel.builder().sensorDataPointId("123").build();
+        ShapeDataPointModel savedDataPointModel = ShapeDataPointModel.builder().sensorDataPointId("123").id("test id").build();
+
+        String expectedMessage = "This is a test message benxin is the best";
+
+        when(shapeDataPointModelRepository.save(shapeDataPointModel)).thenReturn(savedDataPointModel);
+        when(mapper.toJson(savedDataPointModel)).thenReturn(expectedMessage);
+
+        // Act
+        serviceToTest.publishShape(shapeDataPointModel);
+
+        // Assert
+        verify(shapeDataPointModelRepository, times(1)).save(shapeDataPointModel);
+        verify(kafkaTemplate, times(1)).send(eq("SHAPE"), eq(expectedMessage));
     }
 }

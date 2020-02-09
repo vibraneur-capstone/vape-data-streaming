@@ -1,8 +1,7 @@
 package com.vape.data.streaming.service;
 
-import com.vape.data.streaming.model.KurtosisDataPointModel;
-import com.vape.data.streaming.model.RMSDataPointModel;
-import com.vape.data.streaming.model.SensorDataPointModel;
+import com.vape.data.streaming.mapper.ModelMapper;
+import com.vape.data.streaming.model.*;
 import com.vape.data.streaming.utility.JsonMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -24,44 +22,43 @@ public class DataPointConsumer {
 
     private final DataPointProducer dataPointProducer;
 
-    private final static String LOG_MSG = "#### -> Consumed message from SENSOR -> %s ####";
+    private final ModelMapper modelMapper;
 
-//    @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-fft")
-//    public void computeFFT(String message) throws IOException {
-//        log.info(String.format(LOG_MSG, message));
-//    }
+    private final static String LOG_MSG = "#### -> %s Consumed message from SENSOR -> %s ####";
 
     @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-rms")
     public void computeRMS(String message) throws IOException {
-        log.info(String.format(LOG_MSG, message));
+        log.info(String.format(LOG_MSG, "consumer rms", message));
         SensorDataPointModel dataPointModel = mapper.toObject(message, SensorDataPointModel.class);
         BigDecimal computedRMS = dspEngineService.computeRMS(dataPointModel);
-        RMSDataPointModel rmsDataPointModel = constructRMSDataPointModel(dataPointModel, computedRMS);
+        RMSDataPointModel rmsDataPointModel = modelMapper.constructRMSDataPointModel(dataPointModel, computedRMS);
         dataPointProducer.publishRMS(rmsDataPointModel);
     }
 
     @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-kurtosis")
     public void computeKurtosis(String message) throws IOException {
-        log.info(String.format(LOG_MSG, message));
+        log.info(String.format(LOG_MSG, "consumer kurtosis", message));
         SensorDataPointModel dataPointModel = mapper.toObject(message, SensorDataPointModel.class);
         BigDecimal computedKurtosis = dspEngineService.computeKurtosis(dataPointModel);
-        KurtosisDataPointModel kurtosisDataPointModel = constructKurtosisDataPointModel(dataPointModel, computedKurtosis);
+        KurtosisDataPointModel kurtosisDataPointModel = modelMapper.constructKurtosisDataPointModel(dataPointModel, computedKurtosis);
         dataPointProducer.publishKurtosis(kurtosisDataPointModel);
     }
 
-    KurtosisDataPointModel constructKurtosisDataPointModel(SensorDataPointModel dataPointModel, BigDecimal computedData) {
-        return KurtosisDataPointModel.builder()
-                .sensorDataPointId(dataPointModel.getId())
-                .timestamp(LocalDateTime.now().toString())
-                .data(computedData.doubleValue())
-                .build();
+    @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-crest")
+    public void computeCrest(String message) throws IOException {
+        log.info(String.format(LOG_MSG, "consumer crest", message));
+        SensorDataPointModel dataPointModel = mapper.toObject(message, SensorDataPointModel.class);
+        BigDecimal computedCrest = dspEngineService.computeCrest(dataPointModel);
+        CrestDataPointModel crestDataPointModel = modelMapper.constructCrestDataPointModel(dataPointModel, computedCrest);
+        dataPointProducer.publishCrest(crestDataPointModel);
     }
 
-    RMSDataPointModel constructRMSDataPointModel(SensorDataPointModel dataPointModel, BigDecimal computedData) {
-        return RMSDataPointModel.builder()
-                .sensorDataPointId(dataPointModel.getId())
-                .timestamp(LocalDateTime.now().toString())
-                .data(computedData.doubleValue())
-                .build();
+    @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-shape")
+    public void computeShape(String message) throws IOException {
+        log.info(String.format(LOG_MSG, "consumer shape", message));
+        SensorDataPointModel dataPointModel = mapper.toObject(message, SensorDataPointModel.class);
+        BigDecimal computedShape = dspEngineService.computeShape(dataPointModel);
+        ShapeDataPointModel shapeDataPointModel = modelMapper.constructShapeDataPointModel(dataPointModel, computedShape);
+        dataPointProducer.publishShape(shapeDataPointModel);
     }
 }

@@ -50,7 +50,7 @@ public class DspEngineServiceTest {
         SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
         DspDataInput dspDataInput = new DspDataInput().data(new ArrayList<>());
         HttpEntity<DspDataInput> expectedEntity = new HttpEntity<>(dspDataInput);
-        String kurtisisUri = "https://benxin.is.the.best.com";
+        String kurtisisUri = "https://benxin.is.the.best.com/kurtosis";
 
         BigDecimal expectedResult = new BigDecimal(1.3);
         ResponseEntity<SingleDigitDspDataOutput> expectedResponse = new ResponseEntity<>(new SingleDigitDspDataOutput().body(new SingleDigitResultEncapsulation().result(expectedResult)), HttpStatus.OK);
@@ -79,7 +79,7 @@ public class DspEngineServiceTest {
         SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
         DspDataInput dspDataInput = new DspDataInput().data(new ArrayList<>());
         HttpEntity<DspDataInput> expectedEntity = new HttpEntity<>(dspDataInput);
-        String rmsUri = "https://benxin.is.the.best.com";
+        String rmsUri = "https://benxin.is.the.best.com/rms";
 
         BigDecimal expectedResult = new BigDecimal(2);
         ResponseEntity<SingleDigitDspDataOutput> expectedResponse = new ResponseEntity<>(new SingleDigitDspDataOutput().body(new SingleDigitResultEncapsulation().result(expectedResult)), HttpStatus.OK);
@@ -99,6 +99,64 @@ public class DspEngineServiceTest {
         );
         verify(restTemplate, times(1)).getRestTemplate();
         verify(mockRestTemplate, times(1)).exchange(rmsUri, HttpMethod.POST, expectedEntity, SingleDigitDspDataOutput.class);
+    }
+
+    @Test
+    @DisplayName("should make service call to dsp crest endpoint and return data")
+    void test_computeCrest_good_response() {
+        // Arrange
+        SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
+        DspDataInput dspDataInput = new DspDataInput().data(new ArrayList<>());
+        HttpEntity<DspDataInput> expectedEntity = new HttpEntity<>(dspDataInput);
+        String crestUri = "https://benxin.is.the.best.com/crest";
+
+        BigDecimal expectedResult = new BigDecimal(2);
+        ResponseEntity<SingleDigitDspDataOutput> expectedResponse = new ResponseEntity<>(new SingleDigitDspDataOutput().body(new SingleDigitResultEncapsulation().result(expectedResult)), HttpStatus.OK);
+
+
+        doReturn(expectedEntity).when(serviceToTest).getRequestEntity(incomingSensorDataPointModel);
+        when(config.getCrest()).thenReturn(crestUri);
+        when(restTemplate.getRestTemplate()).thenReturn(mockRestTemplate);
+        when(mockRestTemplate.exchange(crestUri, HttpMethod.POST, expectedEntity, SingleDigitDspDataOutput.class)).thenReturn(expectedResponse);
+
+        // Act
+        BigDecimal actualResult = serviceToTest.computeCrest(incomingSensorDataPointModel);
+
+        // Assert
+        assertAll("ensure ok",
+                () -> assertEquals(expectedResult.doubleValue(), actualResult.doubleValue())
+        );
+        verify(restTemplate, times(1)).getRestTemplate();
+        verify(mockRestTemplate, times(1)).exchange(crestUri, HttpMethod.POST, expectedEntity, SingleDigitDspDataOutput.class);
+    }
+
+    @Test
+    @DisplayName("should make service call to dsp shape endpoint and return data")
+    void test_computeShape_good_response() {
+        // Arrange
+        SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
+        DspDataInput dspDataInput = new DspDataInput().data(new ArrayList<>());
+        HttpEntity<DspDataInput> expectedEntity = new HttpEntity<>(dspDataInput);
+        String shapeUri = "https://benxin.is.the.best.com/shape";
+
+        BigDecimal expectedResult = new BigDecimal(2);
+        ResponseEntity<SingleDigitDspDataOutput> expectedResponse = new ResponseEntity<>(new SingleDigitDspDataOutput().body(new SingleDigitResultEncapsulation().result(expectedResult)), HttpStatus.OK);
+
+
+        doReturn(expectedEntity).when(serviceToTest).getRequestEntity(incomingSensorDataPointModel);
+        when(config.getShape()).thenReturn(shapeUri);
+        when(restTemplate.getRestTemplate()).thenReturn(mockRestTemplate);
+        when(mockRestTemplate.exchange(shapeUri, HttpMethod.POST, expectedEntity, SingleDigitDspDataOutput.class)).thenReturn(expectedResponse);
+
+        // Act
+        BigDecimal actualResult = serviceToTest.computeShape(incomingSensorDataPointModel);
+
+        // Assert
+        assertAll("ensure ok",
+                () -> assertEquals(expectedResult.doubleValue(), actualResult.doubleValue())
+        );
+        verify(restTemplate, times(1)).getRestTemplate();
+        verify(mockRestTemplate, times(1)).exchange(shapeUri, HttpMethod.POST, expectedEntity, SingleDigitDspDataOutput.class);
     }
 
     @Test

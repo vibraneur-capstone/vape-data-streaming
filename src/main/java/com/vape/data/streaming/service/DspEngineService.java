@@ -39,6 +39,20 @@ public class DspEngineService {
         return result.getBody().getBody().getResult();
     }
 
+    public BigDecimal computeCrest(SensorDataPointModel sensorDataPoint) throws IllegalStateException {
+        String uri = config.getCrest();
+        HttpEntity entity = getRequestEntity(sensorDataPoint);
+        ResponseEntity<SingleDigitDspDataOutput> result = dspEngineRestTemplate.getRestTemplate().exchange(uri, HttpMethod.POST, entity, SingleDigitDspDataOutput.class);
+        return result.getBody().getBody().getResult();
+    }
+
+    public BigDecimal computeShape(SensorDataPointModel sensorDataPoint) throws IllegalStateException {
+        String uri = config.getShape();
+        HttpEntity entity = getRequestEntity(sensorDataPoint);
+        ResponseEntity<SingleDigitDspDataOutput> result = dspEngineRestTemplate.getRestTemplate().exchange(uri, HttpMethod.POST, entity, SingleDigitDspDataOutput.class);
+        return result.getBody().getBody().getResult();
+    }
+
     HttpEntity<DspDataInput> getRequestEntity(SensorDataPointModel sensorDataPoint) {
         List<BigDecimal> dataPoint = sensorDataPoint.getData().stream().map(BigDecimal::new).collect(Collectors.toList());
         return new HttpEntity<>(new DspDataInput().data(dataPoint), dspEngineRestTemplate.getHeaders());
