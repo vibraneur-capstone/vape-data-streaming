@@ -206,6 +206,7 @@
                 <version>${swagger-codegen-maven-plugin-version}</version>
                 <executions>
                     <execution>
+                        <id>dsp_integration_swagger</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -233,6 +234,31 @@
                             </configOptions>
                         </configuration>
                     </execution>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/swagger.yaml</inputSpec>
+                            <output>${basedir}/target/generated-sources</output>
+                            <language>spring</language>
+                            <library>spring-boot</library>
+                            <modelPackage>com.vape.data.streaming.swagger.v1.model</modelPackage>
+                            <apiPackage>com.vape.data.streaming.swagger.v1.api</apiPackage>
+                            <!--                            <generateApis>true</generateApis>-->
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <configOptions>
+                                <sourceFolder>swagger</sourceFolder>
+                                <interfaceOnly>true</interfaceOnly>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <configPackage>com.vape.data.streaming.swagger.v1.config</configPackage>
+                                <singleContentTypes>true</singleContentTypes>
+                                <useBeanValidation>true</useBeanValidation>
+                                <delegatePattern>true</delegatePattern>
+                            </configOptions>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <!-- jacoco -->
@@ -242,7 +268,8 @@
                 <version>0.8.2</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/com/vape/integration/dsp/swagger/**</exclude>
+                        <exclude>**/com/vape/data/streaming/swagger/**</exclude>
+                        <exclude>**/com/vape/dsp/integration/swagger/**</exclude>
                         <exclude>**/StreamingApplication.class</exclude>
                         <exclude>**/model/**</exclude>
                         <exclude>**/config/**</exclude>
@@ -276,7 +303,7 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.90</minimum>
+                                            <minimum>0.91</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>

@@ -12,4 +12,7 @@
         <Method name="computeRMS"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
     </Match>
+    <Match>
+        <Package name="com.vape.data.streaming.swagger.v1.model"/>
+    </Match>
 </FindBugsFilter>

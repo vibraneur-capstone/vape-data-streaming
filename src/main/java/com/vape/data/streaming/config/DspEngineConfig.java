@@ -14,4 +14,5 @@ public class DspEngineConfig {
     private String rms;
     private String crest;
     private String shape;
+    private String apiKey;
 }
