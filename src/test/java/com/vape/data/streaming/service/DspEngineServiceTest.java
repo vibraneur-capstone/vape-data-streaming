@@ -166,6 +166,33 @@ public class DspEngineServiceTest {
         verify(mockRestTemplate, times(1)).exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class);
     }
 
+    @Test
+    @DisplayName("should return null if HTTP status is OK but body is null")
+    void test_bad_response_freq_domain_null_body() throws ExecutionException, InterruptedException {
+        // Arrange
+        SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
+        HttpEntity<DspDataInput> expectedEntity = new HttpEntity<>(new DspDataInput().data(new ArrayList<>()));
+        String fftUri = "https://benxin.is.the.best.com/fft";
+
+        ResponseEntity<ComplexNumberResultEncapsulation> expectedResponse = new ResponseEntity<>(null, HttpStatus.OK);
+
+        doReturn(expectedEntity).when(serviceToTest).getRequestEntity(incomingSensorDataPointModel);
+        when(config.getUriByDspTopic(DspTopic.FFT)).thenReturn(fftUri);
+        when(restTemplate.getRestTemplate()).thenReturn(mockRestTemplate);
+        when(mockRestTemplate.exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class)).thenReturn(expectedResponse);
+
+        // Act
+        List<Double> actualResult = serviceToTest.computeFreqDomain(DspTopic.FFT, incomingSensorDataPointModel).get();
+
+        // Assert
+        assertAll("ensure ok",
+                () -> assertEquals((Object) null, actualResult)
+        );
+        verify(config, times(1)).getUriByDspTopic(DspTopic.FFT);
+        verify(restTemplate, times(1)).getRestTemplate();
+        verify(mockRestTemplate, times(1)).exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class);
+    }
+
 
     @Test
     @DisplayName("shoud return HttpEntity")
