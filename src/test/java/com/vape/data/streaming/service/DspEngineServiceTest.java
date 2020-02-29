@@ -4,10 +4,7 @@ import com.vape.data.streaming.config.DspEngineConfig;
 import com.vape.data.streaming.config.DspEngineRestTemplate;
 import com.vape.data.streaming.model.DspTopic;
 import com.vape.data.streaming.model.SensorDataPointModel;
-import com.vape.dsp.integration.swagger.v1.model.ComplexNumberResultEncapsulation;
-import com.vape.dsp.integration.swagger.v1.model.DspDataInput;
-import com.vape.dsp.integration.swagger.v1.model.SingleDigitDspDataOutput;
-import com.vape.dsp.integration.swagger.v1.model.SingleDigitResultEncapsulation;
+import com.vape.dsp.integration.swagger.v1.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,12 +82,12 @@ public class DspEngineServiceTest {
         HttpEntity<DspDataInput> expectedEntity = new HttpEntity<>(new DspDataInput().data(new ArrayList<>()));
         String fftUri = "benxin.is.the.best.com/fft";
         List<String> expectedFft = new ArrayList<>(Arrays.asList("2.3", "32.22223321431411322312", "2"));
-        ResponseEntity<ComplexNumberResultEncapsulation> expectedResponse = new ResponseEntity<>(new ComplexNumberResultEncapsulation().result(expectedFft), HttpStatus.OK);
+        ResponseEntity<MultiDigitDspDataOutput> expectedResponse = new ResponseEntity<>(new MultiDigitDspDataOutput().body(new ComplexNumberResultEncapsulation().result(expectedFft)), HttpStatus.OK);
 
         doReturn(expectedEntity).when(serviceToTest).getRequestEntity(incomingSensorDataPointModel);
         when(config.getUriByDspTopic(DspTopic.FFT)).thenReturn(fftUri);
         when(restTemplate.getRestTemplate()).thenReturn(mockRestTemplate);
-        when(mockRestTemplate.exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class)).thenReturn(expectedResponse);
+        when(mockRestTemplate.exchange(fftUri, HttpMethod.POST, expectedEntity, MultiDigitDspDataOutput.class)).thenReturn(expectedResponse);
 
         // Act
         List<Double> actualResult = serviceToTest.computeFreqDomain(DspTopic.FFT, incomingSensorDataPointModel).get();
@@ -105,7 +102,7 @@ public class DspEngineServiceTest {
 
         verify(config, times(1)).getUriByDspTopic(DspTopic.FFT);
         verify(restTemplate, times(1)).getRestTemplate();
-        verify(mockRestTemplate, times(1)).exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class);
+        verify(mockRestTemplate, times(1)).exchange(fftUri, HttpMethod.POST, expectedEntity, MultiDigitDspDataOutput.class);
     }
 
     @Test
@@ -147,12 +144,12 @@ public class DspEngineServiceTest {
         String fftUri = "https://benxin.is.the.best.com/fft";
 
         BigDecimal expectedResult = null;
-        ResponseEntity<ComplexNumberResultEncapsulation> expectedResponse = new ResponseEntity<>(new ComplexNumberResultEncapsulation().result(new ArrayList<>()), HttpStatus.INTERNAL_SERVER_ERROR);
+        ResponseEntity<MultiDigitDspDataOutput> expectedResponse = new ResponseEntity<>(new MultiDigitDspDataOutput().body(new ComplexNumberResultEncapsulation().result(new ArrayList<>())), HttpStatus.INTERNAL_SERVER_ERROR);
 
         doReturn(expectedEntity).when(serviceToTest).getRequestEntity(incomingSensorDataPointModel);
         when(config.getUriByDspTopic(DspTopic.FFT)).thenReturn(fftUri);
         when(restTemplate.getRestTemplate()).thenReturn(mockRestTemplate);
-        when(mockRestTemplate.exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class)).thenReturn(expectedResponse);
+        when(mockRestTemplate.exchange(fftUri, HttpMethod.POST, expectedEntity, MultiDigitDspDataOutput.class)).thenReturn(expectedResponse);
 
         // Act
         List<Double> actualResult = serviceToTest.computeFreqDomain(DspTopic.FFT, incomingSensorDataPointModel).get();
@@ -163,7 +160,7 @@ public class DspEngineServiceTest {
         );
         verify(config, times(1)).getUriByDspTopic(DspTopic.FFT);
         verify(restTemplate, times(1)).getRestTemplate();
-        verify(mockRestTemplate, times(1)).exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class);
+        verify(mockRestTemplate, times(1)).exchange(fftUri, HttpMethod.POST, expectedEntity, MultiDigitDspDataOutput.class);
     }
 
     @Test
@@ -174,12 +171,12 @@ public class DspEngineServiceTest {
         HttpEntity<DspDataInput> expectedEntity = new HttpEntity<>(new DspDataInput().data(new ArrayList<>()));
         String fftUri = "https://benxin.is.the.best.com/fft";
 
-        ResponseEntity<ComplexNumberResultEncapsulation> expectedResponse = new ResponseEntity<>(null, HttpStatus.OK);
+        ResponseEntity<MultiDigitDspDataOutput> expectedResponse = new ResponseEntity<>(null, HttpStatus.OK);
 
         doReturn(expectedEntity).when(serviceToTest).getRequestEntity(incomingSensorDataPointModel);
         when(config.getUriByDspTopic(DspTopic.FFT)).thenReturn(fftUri);
         when(restTemplate.getRestTemplate()).thenReturn(mockRestTemplate);
-        when(mockRestTemplate.exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class)).thenReturn(expectedResponse);
+        when(mockRestTemplate.exchange(fftUri, HttpMethod.POST, expectedEntity, MultiDigitDspDataOutput.class)).thenReturn(expectedResponse);
 
         // Act
         List<Double> actualResult = serviceToTest.computeFreqDomain(DspTopic.FFT, incomingSensorDataPointModel).get();
@@ -190,7 +187,7 @@ public class DspEngineServiceTest {
         );
         verify(config, times(1)).getUriByDspTopic(DspTopic.FFT);
         verify(restTemplate, times(1)).getRestTemplate();
-        verify(mockRestTemplate, times(1)).exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class);
+        verify(mockRestTemplate, times(1)).exchange(fftUri, HttpMethod.POST, expectedEntity, MultiDigitDspDataOutput.class);
     }
 
 

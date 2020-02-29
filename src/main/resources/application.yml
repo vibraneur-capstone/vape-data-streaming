@@ -18,7 +18,7 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
       client-id: ${spring.application.name}-producer
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: ec2-52-23-230-199.compute-1.amazonaws.com:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       buffer-memory: 100MB
@@ -33,4 +33,4 @@ com:
         crest: ${com.vape.dsp.integration.uri}/crest
         shape: ${com.vape.dsp.integration.uri}/shape
         rms: ${com.vape.dsp.integration.uri}/rms
-        api-key: quGExBzlcX12uPC3EiaZBau8VtQKWf9Gy6yEBZ6
+        api-key: quGExBzlcX12uPC3EiaZBau8SVtQKWf9Gy6yEBZ6

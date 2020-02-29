@@ -4,8 +4,8 @@ import com.vape.data.streaming.config.DspEngineConfig;
 import com.vape.data.streaming.config.DspEngineRestTemplate;
 import com.vape.data.streaming.model.DspTopic;
 import com.vape.data.streaming.model.SensorDataPointModel;
-import com.vape.dsp.integration.swagger.v1.model.ComplexNumberResultEncapsulation;
 import com.vape.dsp.integration.swagger.v1.model.DspDataInput;
+import com.vape.dsp.integration.swagger.v1.model.MultiDigitDspDataOutput;
 import com.vape.dsp.integration.swagger.v1.model.SingleDigitDspDataOutput;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +33,9 @@ public class DspEngineService {
 
     @Async
     CompletableFuture<List<Double>> computeFreqDomain(DspTopic topic, SensorDataPointModel sensorDataPoint) {
-        ResponseEntity<ComplexNumberResultEncapsulation> response = invokeDspEngineFreqDomain(config.getUriByDspTopic(topic), sensorDataPoint);
+        ResponseEntity<MultiDigitDspDataOutput> response = invokeDspEngineFreqDomain(config.getUriByDspTopic(topic), sensorDataPoint);
         List<Double> result = isResponseOk(response)
-                ? response.getBody().getResult().stream().map(Double::valueOf).collect(Collectors.toList())
+                ? Objects.requireNonNull(response.getBody()).getBody().getResult().stream().map(Double::valueOf).collect(Collectors.toList())
                 : null;
         return CompletableFuture.completedFuture(result);
     }
@@ -54,14 +54,15 @@ public class DspEngineService {
         return dspEngineRestTemplate.getRestTemplate().exchange(uri, HttpMethod.POST, entity, SingleDigitDspDataOutput.class);
     }
 
-    private ResponseEntity<ComplexNumberResultEncapsulation> invokeDspEngineFreqDomain(String uri, SensorDataPointModel sensorDataPoint) {
+    private ResponseEntity<MultiDigitDspDataOutput> invokeDspEngineFreqDomain(String uri, SensorDataPointModel sensorDataPoint) {
         HttpEntity entity = getRequestEntity(sensorDataPoint);
-        return dspEngineRestTemplate.getRestTemplate().exchange(uri, HttpMethod.POST, entity, ComplexNumberResultEncapsulation.class);
+        return dspEngineRestTemplate.getRestTemplate().exchange(uri, HttpMethod.POST, entity, MultiDigitDspDataOutput.class);
     }
 
     private boolean isResponseOk(ResponseEntity res) {
         if (res.getStatusCode() == HttpStatus.OK && res.getBody() != null) {
             log.info("#### DSP RETURNED OK ####");
+            log.info(res.getBody().toString());
             return true;
         } else {
             log.error("DSP RETURNED STATUS OF " + res.getStatusCodeValue());

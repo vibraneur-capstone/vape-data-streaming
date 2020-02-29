@@ -44,7 +44,7 @@ public class DataPointConsumerTest {
     void test_compute_dsp() throws IOException {
         // Arrange
         String kafkaMessage = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"data\":[123,321]}";
-        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
+        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("567").sensorId("123").build();
         SensorDataPointModel publishedSensorDataPointModel = SensorDataPointModel.builder().timestamp("test").id("567").sensorId("123").build();
         DspDataPointModel expectedModel = DspDataPointModel.builder()
                 .sensorDataPointId("567")
@@ -58,13 +58,11 @@ public class DataPointConsumerTest {
 
         when(mapper.toObject(kafkaMessage, SensorDataPointModel.class)).thenReturn(sensorDataPointModel);
 
-        when(dataPointProducer.publishSensorData(sensorDataPointModel)).thenReturn(publishedSensorDataPointModel);
-
-        when(dspEngineService.computeTimeDomain(DspTopic.RMS, publishedSensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(2.2));
-        when(dspEngineService.computeTimeDomain(DspTopic.KURTOSIS, publishedSensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(0.2));
-        when(dspEngineService.computeTimeDomain(DspTopic.CREST, publishedSensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(1.2));
-        when(dspEngineService.computeTimeDomain(DspTopic.SHAPE, publishedSensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(4.2));
-        when(dspEngineService.computeFreqDomain(DspTopic.FFT, publishedSensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(new ArrayList<>()));
+        when(dspEngineService.computeTimeDomain(DspTopic.RMS, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(2.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.KURTOSIS, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(0.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.CREST, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(1.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.SHAPE, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(4.2));
+        when(dspEngineService.computeFreqDomain(DspTopic.FFT, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(new ArrayList<>()));
 
         // Act
         serviceToTest.computeAllDsp(kafkaMessage);
@@ -72,13 +70,12 @@ public class DataPointConsumerTest {
         // Assert
         verify(mapper, times(1)).toObject(eq(kafkaMessage), eq(SensorDataPointModel.class));
 
-        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.RMS, publishedSensorDataPointModel);
-        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.KURTOSIS, publishedSensorDataPointModel);
-        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.CREST, publishedSensorDataPointModel);
-        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.SHAPE, publishedSensorDataPointModel);
-        verify(dspEngineService, times(1)).computeFreqDomain(DspTopic.FFT, publishedSensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.RMS, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.KURTOSIS, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.CREST, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.SHAPE, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeFreqDomain(DspTopic.FFT, sensorDataPointModel);
 
-        verify(dataPointProducer, times(1)).publishSensorData(sensorDataPointModel);
         verify(dataPointProducer, times(1)).publishDspData(eq(expectedModel));
     }
 
@@ -88,19 +85,15 @@ public class DataPointConsumerTest {
         // Arrange
         String kafkaMessage = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"data\":[123,321]}";
         SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
-        SensorDataPointModel publishedSensorDataPointModel = SensorDataPointModel.builder().timestamp("test").id("567").sensorId("123").build();
-        DspDataPointModel expectedModel = null;
         CompletableFuture badFuture = mock(CompletableFuture.class);
 
         when(mapper.toObject(kafkaMessage, SensorDataPointModel.class)).thenReturn(sensorDataPointModel);
 
-        when(dataPointProducer.publishSensorData(sensorDataPointModel)).thenReturn(publishedSensorDataPointModel);
-
-        when(dspEngineService.computeTimeDomain(DspTopic.RMS, publishedSensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(2.2));
-        when(dspEngineService.computeTimeDomain(DspTopic.KURTOSIS, publishedSensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(0.2));
-        when(dspEngineService.computeTimeDomain(DspTopic.CREST, publishedSensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(1.2));
-        when(dspEngineService.computeTimeDomain(DspTopic.SHAPE, publishedSensorDataPointModel)).thenReturn(badFuture);
-        when(dspEngineService.computeFreqDomain(DspTopic.FFT, publishedSensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(new ArrayList<>()));
+        when(dspEngineService.computeTimeDomain(DspTopic.RMS, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(2.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.KURTOSIS, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(0.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.CREST, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(1.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.SHAPE, sensorDataPointModel)).thenReturn(badFuture);
+        when(dspEngineService.computeFreqDomain(DspTopic.FFT, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(new ArrayList<>()));
         when(badFuture.get()).thenThrow(new InterruptedException());
 
         // Act
@@ -109,13 +102,12 @@ public class DataPointConsumerTest {
         // Assert
         verify(mapper, times(1)).toObject(eq(kafkaMessage), eq(SensorDataPointModel.class));
 
-        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.RMS, publishedSensorDataPointModel);
-        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.KURTOSIS, publishedSensorDataPointModel);
-        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.CREST, publishedSensorDataPointModel);
-        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.SHAPE, publishedSensorDataPointModel);
-        verify(dspEngineService, times(1)).computeFreqDomain(DspTopic.FFT, publishedSensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.RMS, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.KURTOSIS, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.CREST, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.SHAPE, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeFreqDomain(DspTopic.FFT, sensorDataPointModel);
 
-        verify(dataPointProducer, times(1)).publishSensorData(sensorDataPointModel);
         verify(dataPointProducer, times(0)).publishDspData(any());
     }
 }

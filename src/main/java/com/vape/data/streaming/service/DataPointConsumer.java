@@ -29,7 +29,6 @@ public class DataPointConsumer {
     public void computeAllDsp(String message) throws IOException {
         SensorDataPointModel dataPointModel = mapper.toObject(message, SensorDataPointModel.class);
         log.info(String.format(LOG_MSG, "consumer-group-streaming-dsp", dataPointModel.getSensorId()));
-        dataPointModel = dataPointProducer.publishSensorData(dataPointModel);
         DspDataPointModel dspDataPointModel = computeDspDataPointModel(dataPointModel);
         if (dspDataPointModel != null) {
             dataPointProducer.publishDspData(dspDataPointModel);
@@ -43,6 +42,7 @@ public class DataPointConsumer {
         CompletableFuture<Double> shape = dspEngineService.computeTimeDomain(DspTopic.SHAPE, dataPointModel);
         CompletableFuture<List<Double>> fft = dspEngineService.computeFreqDomain(DspTopic.FFT, dataPointModel);
         try {
+            log.info(rms.get().toString());
             return DspDataPointModel.builder()
                     .sensorDataPointId(dataPointModel.getId())
                     .sensorId(dataPointModel.getSensorId())

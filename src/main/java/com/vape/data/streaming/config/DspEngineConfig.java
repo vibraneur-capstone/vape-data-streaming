@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @Slf4j
-@Setter(AccessLevel.NONE)
+@Setter(AccessLevel.PUBLIC)
 @ConfigurationProperties("com.vape.dsp.integration")
 public class DspEngineConfig {
     private String uri;

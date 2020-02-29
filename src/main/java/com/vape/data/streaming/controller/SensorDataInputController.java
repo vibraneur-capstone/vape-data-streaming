@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/")
 @CrossOrigin()
@@ -31,5 +32,13 @@ public class SensorDataInputController implements SensorApi {
         }
         return new ResponseEntity<>(body , HttpStatus.BAD_REQUEST);
     }
-
 }
+/*
+CompletableFuture<List<Double>> tmp = dspEngineService.computeFreqDomain(DspTopic.FFT, model);
+            try{
+                log.info(tmp.get().toString());
+            }
+            catch (ExecutionException | InterruptedException ex) {
+
+            }
+ */
