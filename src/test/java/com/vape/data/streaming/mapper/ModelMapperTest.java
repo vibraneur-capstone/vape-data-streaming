@@ -14,9 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ModelMapperTest {
 
-    @InjectMocks
-    ModelMapper mapperToTest;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);

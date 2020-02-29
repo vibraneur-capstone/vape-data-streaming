@@ -13,11 +13,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,16 +31,22 @@ public class DspEngineService {
 
     private final DspEngineRestTemplate dspEngineRestTemplate;
 
-    List<Double> computeFreqDomain(DspTopic topic, SensorDataPointModel sensorDataPoint) {
+    @Async
+    CompletableFuture<List<Double>> computeFreqDomain(DspTopic topic, SensorDataPointModel sensorDataPoint) {
         ResponseEntity<ComplexNumberResultEncapsulation> response = invokeDspEngineFreqDomain(config.getUriByDspTopic(topic), sensorDataPoint);
-        return isResponseOk(response)
+        List<Double> result = isResponseOk(response)
                 ? response.getBody().getResult().stream().map(Double::valueOf).collect(Collectors.toList())
                 : null;
+        return CompletableFuture.completedFuture(result);
     }
 
-    Double computeTimeDomain(DspTopic topic, SensorDataPointModel sensorDataPoint) {
+    @Async
+    CompletableFuture<Double> computeTimeDomain(DspTopic topic, SensorDataPointModel sensorDataPoint) {
         ResponseEntity<SingleDigitDspDataOutput> response = invokeDspEngineTimeDomain(config.getUriByDspTopic(topic), sensorDataPoint);
-        return isResponseOk(response) ? Objects.requireNonNull(response.getBody()).getBody().getResult().doubleValue() : null;
+        Double result = isResponseOk(response)
+                ? Objects.requireNonNull(response.getBody()).getBody().getResult().doubleValue()
+                : null;
+        return CompletableFuture.completedFuture(result);
     }
 
     private ResponseEntity<SingleDigitDspDataOutput> invokeDspEngineTimeDomain(String uri, SensorDataPointModel sensorDataPoint) {

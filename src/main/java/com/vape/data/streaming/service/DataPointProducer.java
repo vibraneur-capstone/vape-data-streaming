@@ -24,18 +24,20 @@ public class DataPointProducer {
 
     private final DspDataPointModelRepository dspDataPointModelRepository;
 
-    public void publishSensorData(SensorDataPointModel dataPoint) throws InvalidTopicException {
+    public SensorDataPointModel publishSensorData(SensorDataPointModel dataPoint) throws InvalidTopicException {
         dataPoint.setTimestamp(LocalDateTime.now().toString());
-        dataPoint = sensorDataPointModelRepository.save(dataPoint);
-        log.info(String.format("#### -> Publishing Sensor data point for data point id: %s ####", dataPoint.getId()));
-        publishMessage(KafkaTopic.SENSOR.toString(), mapper.toJson(dataPoint));
+        SensorDataPointModel savedDataPoint = sensorDataPointModelRepository.save(dataPoint);
+        log.info(String.format("#### -> Publishing Sensor data point for data point id: %s ####", savedDataPoint.getId()));
+        publishMessage(KafkaTopic.SENSOR.toString(), mapper.toJson(savedDataPoint));
+        return savedDataPoint;
     }
 
-    public void publishDspData(DspDataPointModel dspDataPointModel) throws InvalidTopicException {
+    public DspDataPointModel publishDspData(DspDataPointModel dspDataPointModel) throws InvalidTopicException {
         dspDataPointModel.setTimestamp(LocalDateTime.now().toString());
         DspDataPointModel savedDspDataPoint = dspDataPointModelRepository.save(dspDataPointModel);
-        log.info(String.format("#### -> Publishing DSP data point for sensor data point id: %s ####", dspDataPointModel.getSensorDataPointId()));
+        log.info(String.format("#### -> Publishing DSP data point for sensor data point id: %s ####", savedDspDataPoint.getSensorDataPointId()));
         publishMessage(KafkaTopic.DSP.toString(), mapper.toJson(savedDspDataPoint));
+        return savedDspDataPoint;
     }
 
     private void publishMessage(String topic, String msg) throws InvalidTopicException {

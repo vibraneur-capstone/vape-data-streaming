@@ -40,19 +40,21 @@ public class DataPointProducerTest {
     void test_publishSensorData_method() {
         // Arrange
         SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
-        SensorDataPointModel mongoSensorDataPointModel = SensorDataPointModel.builder().id("123").sensorId("123").build();
+        SensorDataPointModel savedSensorDataPointModel = SensorDataPointModel.builder().id("123").sensorId("123").build();
         String expectedMsg = "test message";
 
-        when(sensorDataPointModelRepository.save(incomingSensorDataPointModel)).thenReturn(mongoSensorDataPointModel);
-        when(mapper.toJson(mongoSensorDataPointModel)).thenReturn(expectedMsg);
+        when(sensorDataPointModelRepository.save(incomingSensorDataPointModel)).thenReturn(savedSensorDataPointModel);
+        when(mapper.toJson(savedSensorDataPointModel)).thenReturn(expectedMsg);
 
         // Act
-        serviceToTest.publishSensorData(incomingSensorDataPointModel);
+        SensorDataPointModel actualSensorDataPointModel = serviceToTest.publishSensorData(incomingSensorDataPointModel);
 
         // Assert
         assertAll("ensure OK",
-                () -> assertNotNull(incomingSensorDataPointModel.getTimestamp())
+                () -> assertNotNull(incomingSensorDataPointModel.getTimestamp()),
+                () -> assertEquals(savedSensorDataPointModel, actualSensorDataPointModel)
         );
+        verify(mapper, times(1)).toJson(savedSensorDataPointModel);
         verify(sensorDataPointModelRepository, times(1)).save(incomingSensorDataPointModel);
         verify(kafkaTemplate, times(1)).send(eq("SENSOR"), eq(expectedMsg));
     }
@@ -70,12 +72,14 @@ public class DataPointProducerTest {
         when(mapper.toJson(savedDspDataPointModel)).thenReturn(expectedMsg);
 
         // Act
-        serviceToTest.publishDspData(dspDataPointModel);
+        DspDataPointModel actualSavedDspDataPointModel = serviceToTest.publishDspData(dspDataPointModel);
 
         // Assert
         assertAll("ensure OK",
-                () -> assertNotNull(dspDataPointModel.getTimestamp())
+                () -> assertNotNull(dspDataPointModel.getTimestamp()),
+                () -> assertEquals(savedDspDataPointModel, actualSavedDspDataPointModel)
         );
+        verify(mapper, times(1)).toJson(savedDspDataPointModel);
         verify(dspDataPointModelRepository, times(1)).save(dspDataPointModel);
         verify(kafkaTemplate, times(1)).send(eq(KafkaTopic.DSP.toString()), eq(expectedMsg));
     }

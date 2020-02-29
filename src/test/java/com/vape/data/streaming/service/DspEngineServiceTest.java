@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -48,7 +49,7 @@ public class DspEngineServiceTest {
 
     @Test
     @DisplayName("should make service call to dsp kurtosis endpoint and return data")
-    void test_compute_time_domain_good_response() {
+    void test_compute_time_domain_good_response() throws ExecutionException, InterruptedException {
         // Arrange
         SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
         DspDataInput dspDataInput = new DspDataInput().data(new ArrayList<>());
@@ -64,7 +65,7 @@ public class DspEngineServiceTest {
         when(mockRestTemplate.exchange(kurtisisUri, HttpMethod.POST, expectedEntity, SingleDigitDspDataOutput.class)).thenReturn(expectedResponse);
 
         // Act
-        Double actualResult = serviceToTest.computeTimeDomain(DspTopic.KURTOSIS, incomingSensorDataPointModel);
+        Double actualResult = serviceToTest.computeTimeDomain(DspTopic.KURTOSIS, incomingSensorDataPointModel).get();
 
         // Assert
         assertAll("ensure ok",
@@ -78,7 +79,7 @@ public class DspEngineServiceTest {
 
     @Test
     @DisplayName("should make service call to dsp fft and return parsed data")
-    void test_compute_freq_domain_good_response() {
+    void test_compute_freq_domain_good_response() throws ExecutionException, InterruptedException {
         // Arrange
         SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
         HttpEntity<DspDataInput> expectedEntity = new HttpEntity<>(new DspDataInput().data(new ArrayList<>()));
@@ -92,7 +93,7 @@ public class DspEngineServiceTest {
         when(mockRestTemplate.exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class)).thenReturn(expectedResponse);
 
         // Act
-        List<Double> actualResult = serviceToTest.computeFreqDomain(DspTopic.FFT, incomingSensorDataPointModel);
+        List<Double> actualResult = serviceToTest.computeFreqDomain(DspTopic.FFT, incomingSensorDataPointModel).get();
 
         // Assert
         assertAll("ensure ok",
@@ -109,7 +110,7 @@ public class DspEngineServiceTest {
 
     @Test
     @DisplayName("should return null if HTTP status is not OK")
-    void test_bad_response_time_domain() {
+    void test_bad_response_time_domain() throws ExecutionException, InterruptedException {
         // Arrange
         SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
         DspDataInput dspDataInput = new DspDataInput().data(new ArrayList<>());
@@ -126,7 +127,7 @@ public class DspEngineServiceTest {
         when(mockRestTemplate.exchange(shapeUri, HttpMethod.POST, expectedEntity, SingleDigitDspDataOutput.class)).thenReturn(expectedResponse);
 
         // Act
-        Double actualResult = serviceToTest.computeTimeDomain(DspTopic.SHAPE, incomingSensorDataPointModel);
+        Double actualResult = serviceToTest.computeTimeDomain(DspTopic.SHAPE, incomingSensorDataPointModel).get();
 
         // Assert
         assertAll("ensure ok",
@@ -139,7 +140,7 @@ public class DspEngineServiceTest {
 
     @Test
     @DisplayName("should return null if HTTP status is not OK")
-    void test_bad_response_freq_domain() {
+    void test_bad_response_freq_domain() throws ExecutionException, InterruptedException {
         // Arrange
         SensorDataPointModel incomingSensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
         HttpEntity<DspDataInput> expectedEntity = new HttpEntity<>(new DspDataInput().data(new ArrayList<>()));
@@ -154,7 +155,7 @@ public class DspEngineServiceTest {
         when(mockRestTemplate.exchange(fftUri, HttpMethod.POST, expectedEntity, ComplexNumberResultEncapsulation.class)).thenReturn(expectedResponse);
 
         // Act
-        List<Double> actualResult = serviceToTest.computeFreqDomain(DspTopic.FFT, incomingSensorDataPointModel);
+        List<Double> actualResult = serviceToTest.computeFreqDomain(DspTopic.FFT, incomingSensorDataPointModel).get();
 
         // Assert
         assertAll("ensure ok",
