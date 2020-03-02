@@ -112,7 +112,7 @@ paths:
         '200':
           description: Successful operation
           schema:
-            $ref: '#/definitions/DataList'
+            $ref: '#/definitions/DspDataList'
           headers:
             Access-Control-Allow-Origin:
               type: string
@@ -167,11 +167,11 @@ definitions:
     type: object
     properties:
       from:
-        type: integer
-        example: 1531563214
+        type: string
+        example: 2020-02-29T00:35:24.037317
       to:
-        type: integer
-        example: 1631563214
+        type: string
+        example: 2020-02-29T00:35:24.037317
       counts:
         $ref: '#/definitions/Count'
 
@@ -184,15 +184,15 @@ definitions:
           - UP
           - DOWN
 
-  DataList:
+  DspDataList:
     type: object
     properties:
       from:
         type: integer
-        example: 2015.09.03.08.12.00
+        example: 2020-02-29T00:35:24.037317
       to:
         type: integer
-        example: 2015.09.03.08.12.00
+        example: 2020-02-29T00:35:24.037317
       sensorId:
         type: string
         example: 0b515ds04320fd342feg4hg
@@ -221,6 +221,10 @@ definitions:
         items:
           type: number
           example: 2.345, 1.567
+      sensorDataPointIdList:
+        type: array
+        items:
+          type: string
 
   Count:
     type: object
