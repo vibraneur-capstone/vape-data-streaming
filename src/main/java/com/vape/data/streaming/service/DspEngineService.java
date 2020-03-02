@@ -46,7 +46,7 @@ public class DspEngineService {
         ResponseEntity<SingleDigitDspDataOutput> response = invokeDspEngineTimeDomain(config.getUriByDspTopic(topic), sensorDataPoint);
         Double result = isResponseOk(response)
                 ? Objects.requireNonNull(response.getBody()).getBody().getResult().doubleValue()
-                : null;
+                : -0.0;
         return CompletableFuture.completedFuture(result);
     }
 

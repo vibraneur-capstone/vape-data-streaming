@@ -128,7 +128,7 @@ public class DspEngineServiceTest {
 
         // Assert
         assertAll("ensure ok",
-                () -> assertEquals((Object) null, actualResult)
+                () -> assertEquals(-0.0, actualResult)
         );
         verify(config, times(1)).getUriByDspTopic(DspTopic.SHAPE);
         verify(restTemplate, times(1)).getRestTemplate();
