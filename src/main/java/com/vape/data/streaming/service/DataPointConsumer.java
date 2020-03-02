@@ -42,7 +42,6 @@ public class DataPointConsumer {
         CompletableFuture<Double> shape = dspEngineService.computeTimeDomain(DspTopic.SHAPE, dataPointModel);
         CompletableFuture<List<Double>> fft = dspEngineService.computeFreqDomain(DspTopic.FFT, dataPointModel);
         try {
-            log.info(rms.get().toString());
             return DspDataPointModel.builder()
                     .sensorDataPointId(dataPointModel.getId())
                     .sensorId(dataPointModel.getSensorId())
