@@ -15,10 +15,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DtoMapperTest {
+public class SensorDataPointModelMapperTest {
 
     @InjectMocks
-    private DtoMapper mapperToTest;
+    private SensorDataPointModelMapper mapperToTest;
 
     @BeforeEach
     public void setUp() {

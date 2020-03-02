@@ -1,6 +1,6 @@
 package com.vape.data.streaming.controller;
 
-import com.vape.data.streaming.mapper.DtoMapper;
+import com.vape.data.streaming.mapper.SensorDataPointModelMapper;
 import com.vape.data.streaming.model.SensorDataPointModel;
 import com.vape.data.streaming.service.DataPointProducer;
 import com.vape.data.streaming.swagger.v1.model.SensorData;
@@ -28,7 +28,7 @@ public class SensorDataInputControllerTest {
     private SensorDataInputController controllerToTest;
 
     @Mock
-    private DtoMapper mapper;
+    private SensorDataPointModelMapper mapper;
 
     @BeforeEach
     public void setUp() {
