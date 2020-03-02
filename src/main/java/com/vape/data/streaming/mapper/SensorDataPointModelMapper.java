@@ -2,18 +2,14 @@ package com.vape.data.streaming.mapper;
 
 import com.vape.data.streaming.model.SensorDataPointModel;
 import com.vape.data.streaming.swagger.v1.model.SensorData;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * A DTO mapper that map all objects. Since we do not have much object as of now. All mapping methods are in one single file.
- * Will abstract them out if this mapper keeps getting bigger.
- */
-@Service
-public class DtoMapper {
+@Component
+public class SensorDataPointModelMapper {
 
     public SensorDataPointModel toSensorDataPointModel(SensorData sensorData) {
         List<Double> dataPoint = sensorData.getData().
