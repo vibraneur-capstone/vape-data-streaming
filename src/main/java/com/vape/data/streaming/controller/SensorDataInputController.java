@@ -1,6 +1,6 @@
 package com.vape.data.streaming.controller;
 
-import com.vape.data.streaming.mapper.DtoMapper;
+import com.vape.data.streaming.mapper.SensorDataPointModelMapper;
 import com.vape.data.streaming.model.SensorDataPointModel;
 import com.vape.data.streaming.service.DataPointProducer;
 import com.vape.data.streaming.swagger.v1.api.SensorApi;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class SensorDataInputController implements SensorApi {
 
     private final DataPointProducer producer;
-    private final DtoMapper mapper;
+    private final SensorDataPointModelMapper mapper;
 
     @Override
     public ResponseEntity<SensorData> sensorPost(SensorData body, String sensorId) {
