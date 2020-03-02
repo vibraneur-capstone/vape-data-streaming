@@ -4,12 +4,6 @@
     </Match>
     <Match>
         <Class name="com.vape.data.streaming.service.DspEngineService" />
-        <Method name="computeKurtosis"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
-    </Match>
-    <Match>
-        <Class name="com.vape.data.streaming.service.DspEngineService" />
-        <Method name="computeRMS"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
     </Match>
     <Match>

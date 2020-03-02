@@ -1,8 +1,6 @@
 package com.vape.data.streaming.service;
 
-import com.vape.data.streaming.model.KurtosisDataPointModel;
-import com.vape.data.streaming.model.RMSDataPointModel;
-import com.vape.data.streaming.model.SensorDataPointModel;
+import com.vape.data.streaming.model.*;
 import com.vape.data.streaming.utility.JsonMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +8,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
@@ -24,44 +23,39 @@ public class DataPointConsumer {
 
     private final DataPointProducer dataPointProducer;
 
-    private final static String LOG_MSG = "#### -> Consumed message from SENSOR -> %s ####";
+    private final static String LOG_MSG = "#### -> %s Consumed message from SENSOR -> sensor id: %s ####";
 
-//    @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-fft")
-//    public void computeFFT(String message) throws IOException {
-//        log.info(String.format(LOG_MSG, message));
-//    }
-
-    @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-rms")
-    public void computeRMS(String message) throws IOException {
-        log.info(String.format(LOG_MSG, message));
+    @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-dsp")
+    public void computeAllDsp(String message) throws IOException {
         SensorDataPointModel dataPointModel = mapper.toObject(message, SensorDataPointModel.class);
-        BigDecimal computedRMS = dspEngineService.computeRMS(dataPointModel);
-        RMSDataPointModel rmsDataPointModel = constructRMSDataPointModel(dataPointModel, computedRMS);
-        dataPointProducer.publishRMS(rmsDataPointModel);
+        log.info(String.format(LOG_MSG, "consumer-group-streaming-dsp", dataPointModel.getSensorId()));
+        DspDataPointModel dspDataPointModel = computeDspDataPointModel(dataPointModel);
+        if (dspDataPointModel != null) {
+            dataPointProducer.publishDspData(dspDataPointModel);
+        }
     }
 
-    @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-kurtosis")
-    public void computeKurtosis(String message) throws IOException {
-        log.info(String.format(LOG_MSG, message));
-        SensorDataPointModel dataPointModel = mapper.toObject(message, SensorDataPointModel.class);
-        BigDecimal computedKurtosis = dspEngineService.computeKurtosis(dataPointModel);
-        KurtosisDataPointModel kurtosisDataPointModel = constructKurtosisDataPointModel(dataPointModel, computedKurtosis);
-        dataPointProducer.publishKurtosis(kurtosisDataPointModel);
-    }
-
-    KurtosisDataPointModel constructKurtosisDataPointModel(SensorDataPointModel dataPointModel, BigDecimal computedData) {
-        return KurtosisDataPointModel.builder()
-                .sensorDataPointId(dataPointModel.getId())
-                .timestamp(LocalDateTime.now().toString())
-                .data(computedData.doubleValue())
-                .build();
-    }
-
-    RMSDataPointModel constructRMSDataPointModel(SensorDataPointModel dataPointModel, BigDecimal computedData) {
-        return RMSDataPointModel.builder()
-                .sensorDataPointId(dataPointModel.getId())
-                .timestamp(LocalDateTime.now().toString())
-                .data(computedData.doubleValue())
-                .build();
+    private DspDataPointModel computeDspDataPointModel(SensorDataPointModel dataPointModel) {
+        CompletableFuture<Double> rms = dspEngineService.computeTimeDomain(DspTopic.RMS, dataPointModel);
+        CompletableFuture<Double> kurtosis = dspEngineService.computeTimeDomain(DspTopic.KURTOSIS, dataPointModel);
+        CompletableFuture<Double> crest = dspEngineService.computeTimeDomain(DspTopic.CREST, dataPointModel);
+        CompletableFuture<Double> shape = dspEngineService.computeTimeDomain(DspTopic.SHAPE, dataPointModel);
+        CompletableFuture<List<Double>> fft = dspEngineService.computeFreqDomain(DspTopic.FFT, dataPointModel);
+        try {
+            log.info(rms.get().toString());
+            return DspDataPointModel.builder()
+                    .sensorDataPointId(dataPointModel.getId())
+                    .sensorId(dataPointModel.getSensorId())
+                    .crest(crest.get())
+                    .kurtosis(kurtosis.get())
+                    .rms(rms.get())
+                    .shape(shape.get())
+                    .fft(fft.get())
+                    .build();
+        }
+        catch (ExecutionException | InterruptedException ex) {
+            log.error("Exception occurred during getting DSP result");
+            return null;
+        }
     }
 }

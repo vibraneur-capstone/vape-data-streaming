@@ -1,9 +1,6 @@
 package com.vape.data.streaming.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vape.data.streaming.model.KurtosisDataPointModel;
-import com.vape.data.streaming.model.RMSDataPointModel;
-import com.vape.data.streaming.model.SensorDataPointModel;
+import com.vape.data.streaming.model.*;
 import com.vape.data.streaming.utility.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +11,13 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 public class DataPointConsumerTest {
 
@@ -33,6 +32,7 @@ public class DataPointConsumerTest {
 
     @Mock
     private JsonMapper mapper;
+
     @Mock
     private DspEngineService dspEngineService;
 
@@ -40,84 +40,74 @@ public class DataPointConsumerTest {
     private DataPointProducer dataPointProducer;
 
     @Test
-    @DisplayName("should compute RMS and publish to Kafka")
-    void test_rms() throws JsonProcessingException, IOException {
+    @DisplayName("should compute DSP asynchronously and publish to Kafka")
+    void test_compute_dsp() throws IOException {
         // Arrange
         String kafkaMessage = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"data\":[123,321]}";
         SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("567").sensorId("123").build();
-        RMSDataPointModel constructedModel = RMSDataPointModel.builder().sensorDataPointId("567").data(1.0).build();
-        BigDecimal computedRMS = new BigDecimal(1.3);
+        SensorDataPointModel publishedSensorDataPointModel = SensorDataPointModel.builder().timestamp("test").id("567").sensorId("123").build();
+        DspDataPointModel expectedModel = DspDataPointModel.builder()
+                .sensorDataPointId("567")
+                .sensorId("123")
+                .crest(1.2)
+                .kurtosis(0.2)
+                .rms(2.2)
+                .shape(4.2)
+                .fft(new ArrayList<>())
+                .build();
 
         when(mapper.toObject(kafkaMessage, SensorDataPointModel.class)).thenReturn(sensorDataPointModel);
-        doReturn(constructedModel).when(serviceToTest).constructRMSDataPointModel(sensorDataPointModel, computedRMS);
-        when(dspEngineService.computeRMS(sensorDataPointModel)).thenReturn(computedRMS);
+
+        when(dspEngineService.computeTimeDomain(DspTopic.RMS, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(2.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.KURTOSIS, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(0.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.CREST, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(1.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.SHAPE, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(4.2));
+        when(dspEngineService.computeFreqDomain(DspTopic.FFT, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(new ArrayList<>()));
 
         // Act
-        serviceToTest.computeRMS(kafkaMessage);
+        serviceToTest.computeAllDsp(kafkaMessage);
 
         // Assert
         verify(mapper, times(1)).toObject(eq(kafkaMessage), eq(SensorDataPointModel.class));
-        verify(dspEngineService, times(1)).computeRMS(sensorDataPointModel);
-        verify(serviceToTest, times(1)).constructRMSDataPointModel(sensorDataPointModel, computedRMS);
-        verify(dataPointProducer, times(1)).publishRMS(constructedModel);
+
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.RMS, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.KURTOSIS, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.CREST, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.SHAPE, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeFreqDomain(DspTopic.FFT, sensorDataPointModel);
+
+        verify(dataPointProducer, times(1)).publishDspData(eq(expectedModel));
     }
 
     @Test
-    @DisplayName("should compute kurtosis and publish to Kafka")
-    void test_kurtosis() throws IOException {
+    @DisplayName("should not publish data when exception occured")
+    void test_bad_dsp_exception() throws IOException, ExecutionException, InterruptedException {
         // Arrange
         String kafkaMessage = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"data\":[123,321]}";
-        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("567").sensorId("123").build();
-        KurtosisDataPointModel constructedModel = KurtosisDataPointModel.builder().sensorDataPointId("567").data(1.0).build();
-        BigDecimal computedKurtosis = new BigDecimal(1.3);
+        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().sensorId("123").build();
+        CompletableFuture badFuture = mock(CompletableFuture.class);
 
         when(mapper.toObject(kafkaMessage, SensorDataPointModel.class)).thenReturn(sensorDataPointModel);
-        doReturn(constructedModel).when(serviceToTest).constructKurtosisDataPointModel(sensorDataPointModel, computedKurtosis);
-        when(dspEngineService.computeKurtosis(sensorDataPointModel)).thenReturn(computedKurtosis);
+
+        when(dspEngineService.computeTimeDomain(DspTopic.RMS, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(2.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.KURTOSIS, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(0.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.CREST, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(1.2));
+        when(dspEngineService.computeTimeDomain(DspTopic.SHAPE, sensorDataPointModel)).thenReturn(badFuture);
+        when(dspEngineService.computeFreqDomain(DspTopic.FFT, sensorDataPointModel)).thenReturn(CompletableFuture.completedFuture(new ArrayList<>()));
+        when(badFuture.get()).thenThrow(new InterruptedException());
 
         // Act
-        serviceToTest.computeKurtosis(kafkaMessage);
+        serviceToTest.computeAllDsp(kafkaMessage);
 
         // Assert
         verify(mapper, times(1)).toObject(eq(kafkaMessage), eq(SensorDataPointModel.class));
-        verify(dspEngineService, times(1)).computeKurtosis(sensorDataPointModel);
-        verify(serviceToTest, times(1)).constructKurtosisDataPointModel(sensorDataPointModel, computedKurtosis);
-        verify(dataPointProducer, times(1)).publishKurtosis(constructedModel);
-    }
 
-    @Test
-    @DisplayName("shoud construct KurtosisDataPointModel")
-    void test_KurtosisDataPointModel() {
-        // Arrange
-        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("567").build();
-        BigDecimal computedData = new BigDecimal(123);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.RMS, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.KURTOSIS, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.CREST, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeTimeDomain(DspTopic.SHAPE, sensorDataPointModel);
+        verify(dspEngineService, times(1)).computeFreqDomain(DspTopic.FFT, sensorDataPointModel);
 
-        // Act
-        KurtosisDataPointModel actualModel = serviceToTest.constructKurtosisDataPointModel(sensorDataPointModel, computedData);
-
-        // Assert
-        assertAll("ensure proper mapping",
-                () -> assertNotNull(actualModel.getTimestamp()),
-                () -> assertEquals(computedData.doubleValue(), actualModel.getData()),
-                () -> assertEquals("567", actualModel.getSensorDataPointId())
-                );
-    }
-
-    @Test
-    @DisplayName("shoud construct RMSDataPointModel")
-    void test_RMSDataPointModel() {
-        // Arrange
-        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().id("123").build();
-        BigDecimal computedData = new BigDecimal(321);
-
-        // Act
-        RMSDataPointModel actualModel = serviceToTest.constructRMSDataPointModel(sensorDataPointModel, computedData);
-
-        // Assert
-        assertAll("ensure proper mapping",
-                () -> assertNotNull(actualModel.getTimestamp()),
-                () -> assertEquals(computedData.doubleValue(), actualModel.getData()),
-                () -> assertEquals("123", actualModel.getSensorDataPointId())
-        );
+        verify(dataPointProducer, times(0)).publishDspData(any());
     }
 }

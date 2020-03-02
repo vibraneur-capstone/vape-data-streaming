@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/")
 @CrossOrigin()
@@ -23,13 +24,12 @@ public class SensorDataInputController implements SensorApi {
     private final DtoMapper mapper;
 
     @Override
-    public ResponseEntity<SensorData> sensorPost(SensorData body, String id) {
-        if (StringUtils.isNotEmpty(body.getSensorId()) && id.equals(body.getSensorId()) ) {
+    public ResponseEntity<SensorData> sensorPost(SensorData body, String sensorId) {
+        if (StringUtils.isNotEmpty(body.getSensorId()) && sensorId.equals(body.getSensorId()) ) {
             SensorDataPointModel model = mapper.toSensorDataPointModel(body);
             producer.publishSensorData(model);
             return new ResponseEntity<>(body, HttpStatus.OK);
         }
         return new ResponseEntity<>(body , HttpStatus.BAD_REQUEST);
     }
-
 }
