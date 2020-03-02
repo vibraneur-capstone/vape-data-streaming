@@ -20,7 +20,7 @@ paths:
 
       parameters:
         - in: query
-          name: id
+          name: sensorId
           required: true
           type: string
           description: The id of the sensor
@@ -53,10 +53,10 @@ paths:
       tags:
         - Query status of computed data by DSP within specified range
       summary: include counts, and data range
-      produces: 
+      produces:
         - application/json
 
-      parameters: 
+      parameters:
         - in: query
           name: from
           required: true
@@ -85,22 +85,14 @@ paths:
           schema:
             $ref: '#/definitions/Exception'
 
-  '/dsp/data/{type}':
+  '/dsp/data':
     get:
       tags:
         - Query historical DSP Engine computed data within specified range
       summary: computed data (RMS, FFT, or Kurtosis)
-      produces: 
+      produces:
         - application/json
-      parameters: 
-        - in: path
-          name: type
-          required: true
-          type: string
-          enum:
-            - FFT
-            - RMS
-            - KURTOSIS
+      parameters:
         - in: query
           name: sensorId
           type: string
@@ -135,8 +127,8 @@ paths:
 
   '/healthcheck':
     get:
-      tags: 
-       - API health check endpoint
+      tags:
+        - API health check endpoint
       summary: health check
       produces:
         - application/json
@@ -161,7 +153,7 @@ definitions:
   SensorData:
     type: object
     properties:
-      sensorId: 
+      sensorId:
         type: string
         readOnly: false
         example: 0x438719834edsa77dh432
@@ -171,7 +163,7 @@ definitions:
           type: number
         example: [0.134, 0.435, 0.532, 0.524]
 
-  DspDataStatus: 
+  DspDataStatus:
     type: object
     properties:
       from:
@@ -180,15 +172,15 @@ definitions:
       to:
         type: integer
         example: 1631563214
-      counts: 
-       $ref: '#/definitions/Count'
+      counts:
+        $ref: '#/definitions/Count'
 
   Health:
     type: object
     properties:
       status:
         type: string
-        enum: 
+        enum:
           - UP
           - DOWN
 
@@ -197,29 +189,55 @@ definitions:
     properties:
       from:
         type: integer
-        example: 1531563214
+        example: 2015.09.03.08.12.00
       to:
         type: integer
-        example: 1631563214
+        example: 2015.09.03.08.12.00
       sensorId:
         type: string
         example: 0b515ds04320fd342feg4hg
-      data: 
-       type: array
-       items: 
-        type: number
-        example: 2.345, 1.567, 5.396, 3.664, 2.569
+      fft:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567, 5.396, 3.664, 2.569
+      rms:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567
+      kurtosis:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567
+      shape:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567
+      crest:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567
 
-  Count: 
+  Count:
     type: object
     properties:
       total:
         type: integer
         example: 8997
-      rms: 
+      rms:
         type: integer
         example: 3294
       kurtosis:
+        type: integer
+        example: 3294
+      shape:
+        type: integer
+        example: 3294
+      crest:
         type: integer
         example: 3294
       fft:

@@ -156,7 +156,7 @@ public class DspEngineServiceTest {
 
         // Assert
         assertAll("ensure ok",
-                () -> assertEquals((Object) null, actualResult)
+                () -> assertEquals(new ArrayList<>(), actualResult)
         );
         verify(config, times(1)).getUriByDspTopic(DspTopic.FFT);
         verify(restTemplate, times(1)).getRestTemplate();
@@ -183,7 +183,7 @@ public class DspEngineServiceTest {
 
         // Assert
         assertAll("ensure ok",
-                () -> assertEquals((Object) null, actualResult)
+                () -> assertEquals(new ArrayList<>(), actualResult)
         );
         verify(config, times(1)).getUriByDspTopic(DspTopic.FFT);
         verify(restTemplate, times(1)).getRestTemplate();
