@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -32,11 +33,11 @@ public class DspEngineService {
     private final DspEngineRestTemplate dspEngineRestTemplate;
 
     @Async
-    CompletableFuture<List<Double>> computeFreqDomain(DspTopic topic, SensorDataPointModel sensorDataPoint) {
+    public CompletableFuture<List<Double>> computeFreqDomain(DspTopic topic, SensorDataPointModel sensorDataPoint) {
         ResponseEntity<MultiDigitDspDataOutput> response = invokeDspEngineFreqDomain(config.getUriByDspTopic(topic), sensorDataPoint);
         List<Double> result = isResponseOk(response)
                 ? Objects.requireNonNull(response.getBody()).getBody().getResult().stream().map(Double::valueOf).collect(Collectors.toList())
-                : null;
+                : new ArrayList<>();
         return CompletableFuture.completedFuture(result);
     }
 
@@ -62,7 +63,6 @@ public class DspEngineService {
     private boolean isResponseOk(ResponseEntity res) {
         if (res.getStatusCode() == HttpStatus.OK && res.getBody() != null) {
             log.info("#### DSP RETURNED OK ####");
-            log.info(res.getBody().toString());
             return true;
         } else {
             log.error("DSP RETURNED STATUS OF " + res.getStatusCodeValue());

@@ -33,12 +33,3 @@ public class SensorDataInputController implements SensorApi {
         return new ResponseEntity<>(body , HttpStatus.BAD_REQUEST);
     }
 }
-/*
-CompletableFuture<List<Double>> tmp = dspEngineService.computeFreqDomain(DspTopic.FFT, model);
-            try{
-                log.info(tmp.get().toString());
-            }
-            catch (ExecutionException | InterruptedException ex) {
-
-            }
- */
