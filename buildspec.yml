@@ -6,7 +6,11 @@ phases:
       java: corretto8
   pre_build:
     commands:
-      - echo Skipping pre build stage
+      - echo Pre-build stage
+      - echo Inserting api Key
+      - sed 's|dsp-api-key|$DSP-API-KEY|g' ./src/main/resources/application.yml
+      - echo Inserting database connection uri
+      - sed 's|mongodb://localhost:27017/datahub|$DB-URI|g' ./src/main/resources/application.yml
   build:
     commands:
       - echo Building...
