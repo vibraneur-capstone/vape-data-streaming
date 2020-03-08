@@ -8,10 +8,11 @@ phases:
     commands:
       - echo Pre-build stage
       - cd src/main/resources
+      - ls
       - echo Inserting api Key
-      - sed -i "" 's|dsp-api-key|$DSP-API-KEY|g' application.yml
+      - sed -i "" 's|dsp-api-key|$DSPAPIKEY|g' application.yml
       - echo Inserting database connection uri
-      - sed -i "" 's|mongodb://localhost:27017/datahub|$DB-URI|g' application.yml
+      - sed -i "" 's|mongodb://localhost:27017/datahub|$DBURI|g' application.yml
       - cd ../../..
   build:
     commands:
