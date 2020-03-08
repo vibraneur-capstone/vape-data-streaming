@@ -3,15 +3,14 @@ package com.vape.data.streaming.controller;
 import com.vape.data.streaming.mapper.DspDataPointModelMapper;
 import com.vape.data.streaming.model.DspDataPointModel;
 import com.vape.data.streaming.service.DspDataQueryService;
+import com.vape.data.streaming.swagger.v1.model.DataStatus;
 import com.vape.data.streaming.swagger.v1.model.DspDataList;
-import com.vape.data.streaming.swagger.v1.model.DspDataStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
@@ -75,9 +74,10 @@ public class DspDataControllerTest {
         // Arrange
         Integer from = 1583119800;
         Integer to = 1583292600;
+        String sensorId = "test id";
 
         // Act
-        ResponseEntity<DspDataStatus> actual = controllerToTest.dspDataStatusGet(from, to);
+        ResponseEntity<DataStatus> actual = controllerToTest.dspDataStatusGet(sensorId, from, to);
 
         // Assert
         assertAll("ensure ok",

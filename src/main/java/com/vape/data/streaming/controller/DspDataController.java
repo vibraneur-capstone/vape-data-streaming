@@ -4,8 +4,8 @@ import com.vape.data.streaming.mapper.DspDataPointModelMapper;
 import com.vape.data.streaming.model.DspDataPointModel;
 import com.vape.data.streaming.service.DspDataQueryService;
 import com.vape.data.streaming.swagger.v1.api.DspApi;
+import com.vape.data.streaming.swagger.v1.model.DataStatus;
 import com.vape.data.streaming.swagger.v1.model.DspDataList;
-import com.vape.data.streaming.swagger.v1.model.DspDataStatus;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,7 @@ public class DspDataController implements DspApi{
     }
 
     @Override
-    public ResponseEntity<DspDataStatus> dspDataStatusGet(Integer from, Integer to){
-        return new ResponseEntity<>(new DspDataStatus(), HttpStatus.OK);
+    public ResponseEntity<DataStatus> dspDataStatusGet(String sensorId,Integer from,Integer to){
+        return new ResponseEntity<>(new DataStatus(), HttpStatus.OK);
     }
 }

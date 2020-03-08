@@ -47,16 +47,19 @@ paths:
           description: Server Error
           schema:
             $ref: '#/definitions/Exception'
-
-  '/dsp/data/status':
     get:
       tags:
-        - Query status of computed data by DSP within specified range
-      summary: include counts, and data range
+        - Query sensor collected raw data
+      summary: Query sensor collected raw data
+
       produces:
         - application/json
 
       parameters:
+        - in: query
+          name: sensorId
+          type: string
+          required: true
         - in: query
           name: from
           required: true
@@ -72,7 +75,48 @@ paths:
         '200':
           description: Successful operation
           schema:
-            $ref: '#/definitions/DspDataStatus'
+            $ref: '#/definitions/SensorDataList'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+
+  '/dsp/data/status':
+    get:
+      tags:
+        - Query status of data from sensor Id (avalibility range, counts)
+      summary: include counts, and data range
+      produces:
+        - application/json
+
+      parameters:
+        - in: query
+          name: sensorId
+          type: string
+          required: true
+        - in: query
+          name: from
+          required: true
+          type: integer
+          description: the start date in number format, 0 or NULL indicate from the very begining
+        - in: query
+          name: to
+          required: true
+          description: the end date in number format, 0 or NULL indicate from the very ending
+          type: integer
+
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/DataStatus'
           headers:
             Access-Control-Allow-Origin:
               type: string
@@ -88,7 +132,7 @@ paths:
   '/dsp/data':
     get:
       tags:
-        - Query historical DSP Engine computed data within specified range
+        - Query historical dsp data of a sensor id within specified range
       summary: computed data (RMS, FFT, or Kurtosis)
       produces:
         - application/json
@@ -163,17 +207,16 @@ definitions:
           type: number
         example: [0.134, 0.435, 0.532, 0.524]
 
-  DspDataStatus:
+  DataStatus:
     type: object
     properties:
-      from:
+      sensorId:
         type: string
-        example: 2020-02-29T00:35:24.037317
-      to:
-        type: string
-        example: 2020-02-29T00:35:24.037317
-      counts:
-        $ref: '#/definitions/Count'
+        example: 5e4af2424016f56472996104
+      sensor:
+        $ref: '#/definitions/Status'
+      dsp:
+        $ref: '#/definitions/Status'
 
   Health:
     type: object
@@ -184,15 +227,26 @@ definitions:
           - UP
           - DOWN
 
+  SensorDataList:
+    type: object
+    allOf: [$ref: '#/definitions/SensorData']
+    properties:
+      from:
+        type: integer
+        example: 1583800251
+      to:
+        type: integer
+        example: 1583800251
+
   DspDataList:
     type: object
     properties:
       from:
         type: integer
-        example: 2020-02-29T00:35:24.037317
+        example: 1583800251
       to:
         type: integer
-        example: 2020-02-29T00:35:24.037317
+        example: 1583800251
       sensorId:
         type: string
         example: 0b515ds04320fd342feg4hg
@@ -226,27 +280,18 @@ definitions:
         items:
           type: string
 
-  Count:
+  Status:
     type: object
     properties:
-      total:
+      latestTimestamp:
+        type: string
+        example: 1583800251
+      earliestTimestamp:
+        type: string
+        example: 1383800251
+      count:
         type: integer
         example: 8997
-      rms:
-        type: integer
-        example: 3294
-      kurtosis:
-        type: integer
-        example: 3294
-      shape:
-        type: integer
-        example: 3294
-      crest:
-        type: integer
-        example: 3294
-      fft:
-        type: integer
-        example: 3294
 
   BadRequestException:
     type: object
