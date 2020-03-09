@@ -1,12 +1,10 @@
 package com.vape.data.streaming.service;
 
-import com.vape.data.streaming.config.WebSocketConfig;
 import com.vape.data.streaming.model.*;
 import com.vape.data.streaming.utility.JsonMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,8 +23,6 @@ public class DataPointConsumer {
 
     private final DataPointProducer dataPointProducer;
 
-    private final SimpMessagingTemplate simpMessagingTemplate;
-
     private final static String LOG_MSG = "#### -> %s Consumed message from SENSOR -> sensor id: %s ####";
 
     @KafkaListener(topics = "SENSOR", groupId = "consumer-group-streaming-dsp")
@@ -35,8 +31,7 @@ public class DataPointConsumer {
         log.info(String.format(LOG_MSG, "consumer-group-streaming-dsp", dataPointModel.getSensorId()));
         DspDataPointModel dspDataPointModel = computeDspDataPointModel(dataPointModel);
         if (dspDataPointModel != null) {
-            DspDataPointModel publishedMsg = dataPointProducer.publishDspData(dspDataPointModel);
-            this.simpMessagingTemplate.convertAndSend(WebSocketConfig.APP_DESTINATION_PREFIX + "/dsp", publishedMsg);
+            dataPointProducer.publishDspData(dspDataPointModel);
         }
     }
 
