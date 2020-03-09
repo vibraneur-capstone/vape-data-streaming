@@ -13,7 +13,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final static String STOMP_END_POINTS = CONTEXT_PATH;
     private final static String ALLOWED_ORIGINS = "*";
     public final static String API_DESTINATION_PREFIX = CONTEXT_PATH + "/app";
-    public final static String APP_DESTINATION_PREFIX = CONTEXT_PATH + "/message";
+    public final static String APP_DESTINATION_PREFIX = "/message";
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {

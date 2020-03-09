@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -35,6 +36,9 @@ public class DataPointProducerTest {
     @Mock
     private DspDataPointModelRepository dspDataPointModelRepository;
 
+    @Mock
+    private SimpMessagingTemplate simpMessagingTemplate;
+
     @Test
     @DisplayName("should store raw data in mongo then publish stored data to topic: SENSOR")
     void test_publishSensorData_method() {
@@ -57,6 +61,7 @@ public class DataPointProducerTest {
         verify(mapper, times(1)).toJson(savedSensorDataPointModel);
         verify(sensorDataPointModelRepository, times(1)).save(incomingSensorDataPointModel);
         verify(kafkaTemplate, times(1)).send(eq("SENSOR"), eq(expectedMsg));
+        verify(simpMessagingTemplate, times(1)).convertAndSend(eq("/message/sensor"), eq(expectedMsg));
     }
 
     @Test
@@ -82,5 +87,6 @@ public class DataPointProducerTest {
         verify(mapper, times(1)).toJson(savedDspDataPointModel);
         verify(dspDataPointModelRepository, times(1)).save(dspDataPointModel);
         verify(kafkaTemplate, times(1)).send(eq(KafkaTopic.DSP.toString()), eq(expectedMsg));
+        verify(simpMessagingTemplate, times(1)).convertAndSend(eq("/message/dsp"), eq(expectedMsg));
     }
 }
