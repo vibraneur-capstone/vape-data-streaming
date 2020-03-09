@@ -2,7 +2,7 @@ package com.vape.data.streaming.controller;
 
 import com.vape.data.streaming.mapper.DspDataPointModelMapper;
 import com.vape.data.streaming.model.DspDataPointModel;
-import com.vape.data.streaming.service.DspDataQueryService;
+import com.vape.data.streaming.service.DataQueryService;
 import com.vape.data.streaming.swagger.v1.model.DataStatus;
 import com.vape.data.streaming.swagger.v1.model.DspDataList;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ public class DspDataControllerTest {
     DspDataController controllerToTest;
 
     @Mock
-    private DspDataQueryService dspDataQueryService;
+    private DataQueryService dataQueryService;
 
     @Mock
     private DspDataPointModelMapper dspDataPointModelMapper;
@@ -47,7 +47,7 @@ public class DspDataControllerTest {
         mockDspDataPointModelList.add(DspDataPointModel.builder().crest(1.1).build());
         DspDataList expected = new DspDataList().addCrestItem(new BigDecimal(1.1));
 
-        when(dspDataQueryService.getDataBySensorAndDateRange(sensorId, from, to)).thenReturn(mockDspDataPointModelList);
+        when(dataQueryService.getDspDataBySensorAndDateRange(sensorId, from, to)).thenReturn(mockDspDataPointModelList);
         when(dspDataPointModelMapper.toDspDataList(mockDspDataPointModelList)).thenReturn(expected);
 
         // Act
@@ -64,7 +64,7 @@ public class DspDataControllerTest {
                 () -> assertEquals(to, actual.getBody().getTo())
         );
 
-        verify(dspDataQueryService, times(1)).getDataBySensorAndDateRange(sensorId, from, to);
+        verify(dataQueryService, times(1)).getDspDataBySensorAndDateRange(sensorId, from, to);
         verify(dspDataPointModelMapper, times(1)).toDspDataList(mockDspDataPointModelList);
     }
 
