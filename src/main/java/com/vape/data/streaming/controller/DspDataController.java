@@ -2,7 +2,7 @@ package com.vape.data.streaming.controller;
 
 import com.vape.data.streaming.mapper.DspDataPointModelMapper;
 import com.vape.data.streaming.model.DspDataPointModel;
-import com.vape.data.streaming.service.DspDataQueryService;
+import com.vape.data.streaming.service.DataQueryService;
 import com.vape.data.streaming.swagger.v1.api.DspApi;
 import com.vape.data.streaming.swagger.v1.model.DataStatus;
 import com.vape.data.streaming.swagger.v1.model.DspDataList;
@@ -21,12 +21,12 @@ import java.util.List;
 @Slf4j
 public class DspDataController implements DspApi{
 
-    private final DspDataQueryService dspDataQueryService;
+    private final DataQueryService dataQueryService;
     private final DspDataPointModelMapper dspDataPointModelMapper;
 
     @Override
     public ResponseEntity<DspDataList> dspDataGet(String sensorId, Integer from, Integer to){
-        List<DspDataPointModel> dspDataPointModelList = dspDataQueryService.getDataBySensorAndDateRange(sensorId, from, to);
+        List<DspDataPointModel> dspDataPointModelList = dataQueryService.getDspDataBySensorAndDateRange(sensorId, from, to);
         DspDataList dspDataList = dspDataPointModelMapper.toDspDataList(dspDataPointModelList);
         dspDataList.setFrom(from);
         dspDataList.setTo(to);
