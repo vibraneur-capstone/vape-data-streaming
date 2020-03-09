@@ -37,6 +37,7 @@ public class SensorDataPointModelMapperTest {
 
         // Assert
         assertAll("ensure ok",
+                () -> assertEquals(2, sensorDataList.getCount()),
                 () -> assertEquals(4, sensorDataList.getData().size()),
                 () -> assertEquals(1.2, sensorDataList.getData().get(0).doubleValue()),
                 () -> assertEquals(2.2, sensorDataList.getData().get(1).doubleValue()),
