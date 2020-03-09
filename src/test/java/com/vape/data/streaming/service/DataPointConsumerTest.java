@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,9 @@ public class DataPointConsumerTest {
 
     @Mock
     private DataPointProducer dataPointProducer;
+
+    @Mock
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Test
     @DisplayName("should compute DSP asynchronously and publish to Kafka")
