@@ -41,8 +41,11 @@ public class SensorDataController implements SensorApi {
     @Override
     public ResponseEntity<SensorDataList> sensorGet(String sensorId, Integer from, Integer to) {
         List<SensorDataPointModel> sensorDataPointModels = dataQueryService.getSensorDataByIdAndDateRange(sensorId, from, to);
+        System.out.println(sensorDataPointModels.size());
         SensorDataList sensorDataList = mapper.toSensorDataList(sensorDataPointModels);
-        sensorDataList.from(from).to(to).sensorId(sensorId);
+        sensorDataList.setFrom(from);
+        sensorDataList.setTo(to);
+        sensorDataList.setSensorId(sensorId);
         return new ResponseEntity<>(sensorDataList, HttpStatus.OK);
     }
 }

@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface SensorDataPointModelRepository extends MongoRepository<SensorDataPointModel, String> {
 
-    @Query(value = "{id: ?0, 'timestamp': {$gte: ?1, $lte:?2 }}", sort = "{'timestamp': 1}")
+    @Query(value = "{sensorId: ?0, 'timestamp': {$gte: ?1, $lte:?2 }}", sort = "{'timestamp': 1}")
     List<SensorDataPointModel> findSensorDataByIdAndDateRange(String id, String from, String to);
 }

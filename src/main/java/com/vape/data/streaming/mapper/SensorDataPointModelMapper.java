@@ -17,6 +17,7 @@ public class SensorDataPointModelMapper {
         SensorDataList sensorDataList = new SensorDataList();
         sensorDataList.setData(new ArrayList<>());
         sensorDataPointModels.forEach(model -> sensorDataList.getData().addAll(model.getData().stream().map(BigDecimal::new).collect(Collectors.toList())));
+        sensorDataList.setCount(sensorDataPointModels.size());
         return sensorDataList;
     }
 

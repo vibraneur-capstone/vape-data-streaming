@@ -237,6 +237,9 @@ definitions:
       to:
         type: integer
         example: 1583800251
+      count:
+        type: integer
+        example: 10
 
   DspDataList:
     type: object
@@ -279,6 +282,8 @@ definitions:
         type: array
         items:
           type: string
+      count:
+        type: integer
 
   Status:
     type: object
