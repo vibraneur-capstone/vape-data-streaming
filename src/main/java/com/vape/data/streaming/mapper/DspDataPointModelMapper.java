@@ -20,6 +20,7 @@ public class DspDataPointModelMapper {
     }
 
     private void updateByDspDataPointModel(DspDataList dspDataList, DspDataPointModel dspDataPointModel) {
+        dspDataList.addTimestampsItem(dspDataPointModel.getTimestamp());
         if(dspDataPointModel.getCrest() != null){
             dspDataList.addCrestItem(new BigDecimal(dspDataPointModel.getCrest()));
         }

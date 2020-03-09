@@ -278,6 +278,11 @@ definitions:
         items:
           type: number
           example: 2.345, 1.567
+      timestamps:
+        type: array
+        items:
+          type: string
+        example: 1583800251
       sensorDataPointIdList:
         type: array
         items:
