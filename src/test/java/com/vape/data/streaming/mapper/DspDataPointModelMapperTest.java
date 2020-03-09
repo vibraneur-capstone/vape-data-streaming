@@ -36,6 +36,7 @@ public class DspDataPointModelMapperTest {
 
         // Assert
         assertAll("ensure ok",
+                () -> assertEquals(2, actual.getCount()),
                 () -> assertEquals(2, actual.getCrest().size()),
                 () -> assertEquals(2, actual.getKurtosis().size()),
                 () -> assertEquals(2, actual.getRms().size()),

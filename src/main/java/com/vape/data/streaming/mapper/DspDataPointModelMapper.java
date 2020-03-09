@@ -15,6 +15,7 @@ public class DspDataPointModelMapper {
     public DspDataList toDspDataList(List<DspDataPointModel> dspDataPointModelList) {
         DspDataList dspDataList = new DspDataList().fft(new ArrayList<>());
         dspDataPointModelList.forEach(model -> updateByDspDataPointModel(dspDataList, model));
+        dspDataList.setCount(dspDataPointModelList.size());
         return dspDataList;
     }
 
