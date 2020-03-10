@@ -12,6 +12,10 @@ phases:
       - sed -i "s|dsp-api-key|$DSPAPIKEY|g" application.yml
       - echo Inserting database connection uri
       - sed -i "s|mongodb://localhost:27017/datahub|$DBURI|g" application.yml
+      - echo Inserting broker address
+      - sed -i "s|localhost:9092|$BROKER|g" application.yml
+      - echo -i Inserting dsp uri
+      - sed -i "s|dsp-uri|$DSPURI|g" application.yml
       - cd ../../..
   build:
     commands:
