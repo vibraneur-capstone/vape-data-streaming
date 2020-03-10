@@ -47,6 +47,8 @@ paths:
           description: Server Error
           schema:
             $ref: '#/definitions/Exception'
+
+  '/data/sensor':
     get:
       tags:
         - Query sensor collected raw data
@@ -87,8 +89,7 @@ paths:
           description: Server Error
           schema:
             $ref: '#/definitions/Exception'
-
-  '/dsp/data/status':
+  '/data/status':
     get:
       tags:
         - Query status of data from sensor Id (avalibility range, counts)
@@ -101,16 +102,6 @@ paths:
           name: sensorId
           type: string
           required: true
-        - in: query
-          name: from
-          required: true
-          type: integer
-          description: the start date in number format, 0 or NULL indicate from the very begining
-        - in: query
-          name: to
-          required: true
-          description: the end date in number format, 0 or NULL indicate from the very ending
-          type: integer
 
       responses:
         '200':
@@ -129,7 +120,7 @@ paths:
           schema:
             $ref: '#/definitions/Exception'
 
-  '/dsp/data':
+  '/data/dsp':
     get:
       tags:
         - Query historical dsp data of a sensor id within specified range

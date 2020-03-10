@@ -10,4 +10,7 @@ public interface SensorDataPointModelRepository extends MongoRepository<SensorDa
 
     @Query(value = "{sensorId: ?0, 'timestamp': {$gte: ?1, $lte:?2 }}", sort = "{'timestamp': 1}")
     List<SensorDataPointModel> findSensorDataByIdAndDateRange(String id, String from, String to);
+
+    @Query(value = "{sensorId: ?0}", sort = "{'timestamp': 1}", fields = "{'timestamp': 1}")
+    List<SensorDataPointModel> findAllTimestampsBySensorId(String sensorId);
 }

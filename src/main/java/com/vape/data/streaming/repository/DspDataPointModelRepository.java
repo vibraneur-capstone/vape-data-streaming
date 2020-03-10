@@ -11,4 +11,7 @@ public interface DspDataPointModelRepository extends MongoRepository<DspDataPoin
     @Query(value = "{sensorId: ?0, 'timestamp': {$gte: ?1, $lte:?2 }}", sort = "{'timestamp': 1}")
     List<DspDataPointModel> findDspDataBySensorAndDateRange(String id, String from, String to);
 
+    @Query(value = "{sensorId: ?0}", sort = "{'timestamp': 1}", fields = "{'timestamp': 1}")
+    List<DspDataPointModel> findAllTimestampsBySensorId(String sensorId);
+
 }
