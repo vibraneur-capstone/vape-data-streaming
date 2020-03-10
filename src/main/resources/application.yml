@@ -10,7 +10,7 @@ spring:
       uri: mongodb://localhost:27017/datahub
   kafka:
     consumer:
-      bootstrap-servers: ec2-52-23-230-199.compute-1.amazonaws.com:9092
+      bootstrap-servers: localhost:9092
       group-id: consumer-group-${spring.application.name}
       auto-offset-reset: earliest
 #      heartbeat-interval:
@@ -18,7 +18,7 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
       client-id: ${spring.application.name}-producer
-      bootstrap-servers: ec2-52-23-230-199.compute-1.amazonaws.com:9092
+      bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       buffer-memory: 100MB
@@ -27,7 +27,7 @@ com:
   vape:
     dsp:
       integration:
-        uri: https://api.lambda.dsp-engine.vibraneur.com/v1/algorithms
+        uri: dsp-uri
         kurtosis: ${com.vape.dsp.integration.uri}/kurtosis
         fft: ${com.vape.dsp.integration.uri}/fft
         crest: ${com.vape.dsp.integration.uri}/crest
