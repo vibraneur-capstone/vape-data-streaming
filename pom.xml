@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.vape.data</groupId>
     <artifactId>streaming</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.2-SNAPSHOT</version>
     <name>streaming</name>
     <description>integration with kafka</description>
 
