@@ -1,9 +1,6 @@
 package com.vape.data.streaming.model;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,9 +8,11 @@ import java.util.List;
 
 @Data
 @Builder
-@Setter(AccessLevel.PACKAGE)
+@Setter(AccessLevel.PUBLIC)
 @Document(collection="sensor")
-public class SensorDataPoint {
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+public class SensorDataPointModel {
     @Id
     private String id;
     private String sensorId;

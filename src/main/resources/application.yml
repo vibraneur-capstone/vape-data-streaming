@@ -6,8 +6,8 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://admin-sensor-data:vj1s03DHLHOGSmnB@cluster0-vjrw6.mongodb.net/datahub?retryWrites=true&w=majority
       database: datahub
+      uri: mongodb://localhost:27017/datahub
   kafka:
     consumer:
       bootstrap-servers: localhost:9092
@@ -23,3 +23,14 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       buffer-memory: 100MB
       batch-size: 10MB
+com:
+  vape:
+    dsp:
+      integration:
+        uri: dsp-uri
+        kurtosis: ${com.vape.dsp.integration.uri}/kurtosis
+        fft: ${com.vape.dsp.integration.uri}/fft
+        crest: ${com.vape.dsp.integration.uri}/crest
+        shape: ${com.vape.dsp.integration.uri}/shape
+        rms: ${com.vape.dsp.integration.uri}/rms
+        api-key: dsp-api-key

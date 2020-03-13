@@ -9,15 +9,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class JsonMapper {
 
-    private final static ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public String toJson(Object obj) {
         try {
             return mapper.writeValueAsString(obj);
-        }
-        catch (JsonProcessingException ex) {
+        } catch (JsonProcessingException ex) {
             log.error("toJson failed due to invalid argument provided");
-            return "null";
+            return "";
         }
+    }
+
+    public <T> T toObject(String json, Class<T> obj) throws JsonProcessingException {
+        return mapper.readValue(json, obj);
     }
 }

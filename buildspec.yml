@@ -1,0 +1,35 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto8
+  pre_build:
+    commands:
+      - echo Pre-build stage
+      - cd src/main/resources
+      - echo Inserting api Key
+      - sed -i "s|dsp-api-key|$DSPAPIKEY|g" application.yml
+      - echo Inserting database connection uri
+      - sed -i "s|mongodb://localhost:27017/datahub|$DBURI|g" application.yml
+      - echo Inserting broker address
+      - sed -i "s|localhost:9092|$BROKER|g" application.yml
+      - echo -i Inserting dsp uri
+      - sed -i "s|dsp-uri|$DSPURI|g" application.yml
+      - cd ../../..
+  build:
+    commands:
+      - echo Building...
+      - echo Build started on `date`
+      - mvn install
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - timestamp=$(date +%Y-%m-%d-%H-%M-%S)
+      - VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+      - cp ./target/streaming-$VERSION.jar .
+      - cp ./target/streaming-$VERSION.jar ./streaming-dist.jar
+artifacts:
+  files:
+    - streaming-*.jar
+  name: vape-data-streaming

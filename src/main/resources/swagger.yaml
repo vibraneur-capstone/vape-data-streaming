@@ -1,0 +1,318 @@
+swagger: '2.0'
+info:
+  description: Kafka Datapipline integration for V.A.P.E
+  title: V.A.P.E Data Streaming
+  version: 0.0.2 snapshot
+host: localhost:8823
+basePath: /streaming/v1
+schemes:
+  - http
+  - https
+paths:
+  '/sensor':
+    post:
+      tags:
+        - Publish raw sensor data to Kafka
+      summary: Publish raw sensor data to Kafka through this endpoint
+
+      produces:
+        - application/json
+
+      parameters:
+        - in: query
+          name: sensorId
+          required: true
+          type: string
+          description: The id of the sensor
+        - in: body
+          name: data
+          description: Object that encapsulate raw data point
+          required: true
+          schema:
+            $ref: '#/definitions/SensorData'
+
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/SensorData'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+
+  '/data/sensor':
+    get:
+      tags:
+        - Query sensor collected raw data
+      summary: Query sensor collected raw data
+
+      produces:
+        - application/json
+
+      parameters:
+        - in: query
+          name: sensorId
+          type: string
+          required: true
+        - in: query
+          name: from
+          required: true
+          type: integer
+          description: the start date in number format, 0 or NULL indicate from the very begining
+        - in: query
+          name: to
+          required: true
+          description: the end date in number format, 0 or NULL indicate from the very ending
+          type: integer
+
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/SensorDataList'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+  '/data/status':
+    get:
+      tags:
+        - Query status of data from sensor Id (avalibility range, counts)
+      summary: include counts, and data range
+      produces:
+        - application/json
+
+      parameters:
+        - in: query
+          name: sensorId
+          type: string
+          required: true
+
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/DataStatus'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+
+  '/data/dsp':
+    get:
+      tags:
+        - Query historical dsp data of a sensor id within specified range
+      summary: computed data (RMS, FFT, or Kurtosis)
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: sensorId
+          type: string
+          required: true
+        - in: query
+          name: from
+          required: true
+          type: integer
+          description: the start date in number format, 0 or NULL indicate from the very begining
+        - in: query
+          name: to
+          required: true
+          description: the end date in number format, 0 or NULL indicate from the very ending
+          type: integer
+
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/DspDataList'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+
+  '/healthcheck':
+    get:
+      tags:
+        - API health check endpoint
+      summary: health check
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/Health'
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/BadRequestException'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/Exception'
+definitions:
+
+  SensorData:
+    type: object
+    properties:
+      sensorId:
+        type: string
+        readOnly: false
+        example: 0x438719834edsa77dh432
+      data:
+        type: array
+        items:
+          type: number
+        example: [0.134, 0.435, 0.532, 0.524]
+
+  DataStatus:
+    type: object
+    properties:
+      sensorId:
+        type: string
+        example: 5e4af2424016f56472996104
+      sensor:
+        $ref: '#/definitions/Status'
+      dsp:
+        $ref: '#/definitions/Status'
+
+  Health:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+          - UP
+          - DOWN
+
+  SensorDataList:
+    type: object
+    allOf: [$ref: '#/definitions/SensorData']
+    properties:
+      from:
+        type: integer
+        example: 1583800251
+      to:
+        type: integer
+        example: 1583800251
+      count:
+        type: integer
+        example: 10
+
+  DspDataList:
+    type: object
+    properties:
+      from:
+        type: integer
+        example: 1583800251
+      to:
+        type: integer
+        example: 1583800251
+      sensorId:
+        type: string
+        example: 0b515ds04320fd342feg4hg
+      fft:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567, 5.396, 3.664, 2.569
+      rms:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567
+      kurtosis:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567
+      shape:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567
+      crest:
+        type: array
+        items:
+          type: number
+          example: 2.345, 1.567
+      timestamps:
+        type: array
+        items:
+          type: string
+        example: 1583800251
+      sensorDataPointIdList:
+        type: array
+        items:
+          type: string
+      count:
+        type: integer
+
+  Status:
+    type: object
+    properties:
+      latestTimestamp:
+        type: string
+        example: 1583800251
+      earliestTimestamp:
+        type: string
+        example: 1383800251
+      count:
+        type: integer
+        example: 8997
+
+  BadRequestException:
+    type: object
+    properties:
+      message:
+        type: integer
+      errorCode:
+        type: string
+        readOnly: false
+    required:
+      - message
+      - errorCode
+  Exception:
+    type: object
+    properties:
+      message:
+        type: integer
+      errorCode:
+        type: string
+        readOnly: false
+    required:
+      - message
+      - errorCode
