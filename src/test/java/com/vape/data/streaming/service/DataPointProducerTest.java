@@ -61,7 +61,7 @@ public class DataPointProducerTest {
         verify(mapper, times(1)).toJson(savedSensorDataPointModel);
         verify(sensorDataPointModelRepository, times(1)).save(incomingSensorDataPointModel);
         verify(kafkaTemplate, times(1)).send(eq("SENSOR"), eq(expectedMsg));
-        verify(simpMessagingTemplate, times(1)).convertAndSend(eq("/message/sensor"), eq(expectedMsg));
+        verify(simpMessagingTemplate, times(1)).convertAndSend(eq("/message/sensor/123"), eq(expectedMsg));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class DataPointProducerTest {
     void test_publishDspData_method() {
         // Arrange
         DspDataPointModel dspDataPointModel = DspDataPointModel.builder().crest(2.3).sensorDataPointId("test id").build();
-        DspDataPointModel savedDspDataPointModel = DspDataPointModel.builder().id("id").crest(2.3).sensorDataPointId("test id").build();
+        DspDataPointModel savedDspDataPointModel = DspDataPointModel.builder().id("id").sensorId("123").crest(2.3).sensorDataPointId("test id").build();
 
         String expectedMsg = "test message";
 
@@ -87,6 +87,6 @@ public class DataPointProducerTest {
         verify(mapper, times(1)).toJson(savedDspDataPointModel);
         verify(dspDataPointModelRepository, times(1)).save(dspDataPointModel);
         verify(kafkaTemplate, times(1)).send(eq(KafkaTopic.DSP.toString()), eq(expectedMsg));
-        verify(simpMessagingTemplate, times(1)).convertAndSend(eq("/message/dsp"), eq(expectedMsg));
+        verify(simpMessagingTemplate, times(1)).convertAndSend(eq("/message/dsp/123"), eq(expectedMsg));
     }
 }
