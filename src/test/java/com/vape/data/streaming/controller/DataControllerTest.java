@@ -140,8 +140,8 @@ public class DataControllerTest {
         dataPointOne.add(2.2);
         dataPointOne.add(3.2);
         dataPointOne.add(4.2);
-        sensorDataPointModelList.add(SensorDataPointModel.builder().data(dataPointOne).build());
-        sensorDataPointModelList.add(SensorDataPointModel.builder().data(dataPointTwo).build());
+        sensorDataPointModelList.add(SensorDataPointModel.builder().raw(dataPointOne).build());
+        sensorDataPointModelList.add(SensorDataPointModel.builder().raw(dataPointTwo).build());
         return sensorDataPointModelList;
     }
 }

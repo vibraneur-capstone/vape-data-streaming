@@ -40,7 +40,7 @@ public class SensorControllerTest {
         // Arrange
         String sensorId = "test id";
         SensorData sensorData = new SensorData().sensorId(sensorId).data(new ArrayList<>());
-        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().sensorId(sensorId).data(new ArrayList<>()).build();
+        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().sensorId(sensorId).raw(new ArrayList<>()).build();
         when(mapper.toSensorDataPointModel(sensorData)).thenReturn(sensorDataPointModel);
 
         // Act
