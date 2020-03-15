@@ -24,7 +24,7 @@ public class JsonMapperTest {
         // Arrange
         SensorDataPointModel objectOne = SensorDataPointModel.builder().sensorId("123").id("567").build();
 
-        String expectedJsonStringOne = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"data\":null}";
+        String expectedJsonStringOne = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":null,\"raw\":null}";
 
         // Act
         String actualJsonStringOne = serviceToTest.toJson(objectOne);
@@ -54,7 +54,7 @@ public class JsonMapperTest {
     @DisplayName("should convert to SensorDataPointModel object from json")
     void test_to_object_conversion() throws JsonProcessingException {
         // Arrange
-        String stringOne = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":\"2020-01-22T19:49:45.407517\",\"data\":null}";
+        String stringOne = "{\"id\":\"567\",\"sensorId\":\"123\",\"sensorHubId\":null,\"timestamp\":\"2020-01-22T19:49:45.407517\",\"raw\":null}";
 
         SensorDataPointModel object = serviceToTest.toObject(stringOne, SensorDataPointModel.class);
         assertAll("ensure OK",
