@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +46,8 @@ public class DataQueryServiceTest {
         int from = 1583162178;
         int to = 1583162178;
         String sensorId = "test id";
-        String parsed_from = LocalDateTime.ofInstant(Instant.ofEpochSecond(from), ZoneId.systemDefault()).toString();
-        String parsed_to = LocalDateTime.ofInstant(Instant.ofEpochSecond(to), ZoneId.systemDefault()).toString();
+        String parsed_from = Instant.ofEpochSecond(from).atZone(ZoneOffset.UTC).toString();
+        String parsed_to = Instant.ofEpochSecond(to).atZone(ZoneOffset.UTC).toString();
 
         when(dspDataPointModelRepository.findDspDataBySensorAndDateRange(sensorId, parsed_from, parsed_to)).thenReturn(new ArrayList<>());
 
@@ -69,8 +70,8 @@ public class DataQueryServiceTest {
         int from = 1583162178;
         int to = 1583162178;
         String sensorId = "test id";
-        String parsed_from = LocalDateTime.ofInstant(Instant.ofEpochSecond(from), ZoneId.systemDefault()).toString();
-        String parsed_to = LocalDateTime.ofInstant(Instant.ofEpochSecond(to), ZoneId.systemDefault()).toString();
+        String parsed_from = Instant.ofEpochSecond(from).atZone(ZoneOffset.UTC).toString();
+        String parsed_to = Instant.ofEpochSecond(to).atZone(ZoneOffset.UTC).toString();
 
         when(sensorDataPointModelRepository.findSensorDataByIdAndDateRange(sensorId, parsed_from, parsed_to)).thenReturn(new ArrayList<>());
 

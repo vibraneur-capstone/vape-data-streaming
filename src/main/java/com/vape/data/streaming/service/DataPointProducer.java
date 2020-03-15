@@ -11,7 +11,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 @Slf4j
 @Service
@@ -29,7 +30,7 @@ public class DataPointProducer {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     public SensorDataPointModel publishSensorData(SensorDataPointModel dataPoint) throws InvalidTopicException {
-        dataPoint.setTimestamp(LocalDateTime.now().toString());
+        dataPoint.setTimestamp(ZonedDateTime.now(ZoneOffset.UTC).toString());
         SensorDataPointModel savedDataPoint = sensorDataPointModelRepository.save(dataPoint);
         log.info(String.format("#### -> Publishing Sensor data point for data point id: %s ####", savedDataPoint.getId()));
         String message = mapper.toJson(savedDataPoint);
@@ -39,7 +40,7 @@ public class DataPointProducer {
     }
 
     public DspDataPointModel publishDspData(DspDataPointModel dspDataPointModel) throws InvalidTopicException {
-        dspDataPointModel.setTimestamp(LocalDateTime.now().toString());
+        dspDataPointModel.setTimestamp(ZonedDateTime.now(ZoneOffset.UTC).toString());
         DspDataPointModel savedDspDataPoint = dspDataPointModelRepository.save(dspDataPointModel);
         log.info(String.format("#### -> Publishing DSP data point for sensor data point id: %s ####", savedDspDataPoint.getSensorDataPointId()));
         String message = mapper.toJson(savedDspDataPoint);

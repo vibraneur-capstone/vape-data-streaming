@@ -11,8 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,6 +66,6 @@ public class DataQueryService {
     }
 
     private String toLocalDateTimeString(Integer epoch) {
-        return LocalDateTime.ofInstant(Instant.ofEpochSecond(epoch), ZoneId.systemDefault()).toString();
+        return Instant.ofEpochSecond(epoch).atZone(ZoneOffset.UTC).toString();
     }
 }
