@@ -16,7 +16,7 @@ public class SensorDataPointModelMapper {
     public SensorDataList toSensorDataList(List<SensorDataPointModel> sensorDataPointModels) {
         SensorDataList sensorDataList = new SensorDataList();
         sensorDataList.setData(new ArrayList<>());
-        sensorDataPointModels.forEach(model -> sensorDataList.getData().addAll(model.getData().stream().map(BigDecimal::new).collect(Collectors.toList())));
+        sensorDataPointModels.forEach(model -> sensorDataList.getData().addAll(model.getRaw().stream().map(BigDecimal::new).collect(Collectors.toList())));
         sensorDataList.setCount(sensorDataPointModels.size());
         return sensorDataList;
     }
@@ -30,6 +30,6 @@ public class SensorDataPointModelMapper {
         return SensorDataPointModel
                 .builder()
                 .sensorId(sensorData.getSensorId())
-                .data(dataPoint).build();
+                .raw(dataPoint).build();
     }
 }

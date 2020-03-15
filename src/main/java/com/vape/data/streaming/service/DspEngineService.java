@@ -71,7 +71,7 @@ public class DspEngineService {
     }
 
     HttpEntity<DspDataInput> getRequestEntity(SensorDataPointModel sensorDataPoint) {
-        List<BigDecimal> dataPoint = sensorDataPoint.getData().stream().map(BigDecimal::new).collect(Collectors.toList());
+        List<BigDecimal> dataPoint = sensorDataPoint.getRaw().stream().map(BigDecimal::new).collect(Collectors.toList());
         return new HttpEntity<>(new DspDataInput().data(dataPoint), dspEngineRestTemplate.getHeaders());
     }
 }

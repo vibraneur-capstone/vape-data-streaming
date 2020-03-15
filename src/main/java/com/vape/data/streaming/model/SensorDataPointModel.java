@@ -18,5 +18,5 @@ public class SensorDataPointModel {
     private String sensorId;
     private String sensorHubId;
     private String timestamp;
-    private List<Double> data;
+    private List<Double> raw;
 }

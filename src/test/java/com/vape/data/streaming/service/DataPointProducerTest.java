@@ -84,7 +84,7 @@ public class DataPointProducerTest {
                 () -> assertNotNull(dspDataPointModel.getTimestamp()),
                 () -> assertEquals(savedDspDataPointModel, actualSavedDspDataPointModel)
         );
-        verify(mapper, times(1)).toJson(savedDspDataPointModel);
+        verify(mapper, times(2)).toJson(savedDspDataPointModel);
         verify(dspDataPointModelRepository, times(1)).save(dspDataPointModel);
         verify(kafkaTemplate, times(1)).send(eq(KafkaTopic.DSP.toString()), eq(expectedMsg));
         verify(simpMessagingTemplate, times(1)).convertAndSend(eq("/message/dsp/123"), eq(expectedMsg));

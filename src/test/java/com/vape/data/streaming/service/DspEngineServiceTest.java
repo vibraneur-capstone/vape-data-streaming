@@ -198,7 +198,7 @@ public class DspEngineServiceTest {
         List<Double> data = new ArrayList<>();
         data.add(321.90);
         data.add(123.90);
-        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().data(data).build();
+        SensorDataPointModel sensorDataPointModel = SensorDataPointModel.builder().raw(data).build();
 
         when(restTemplate.getHeaders()).thenReturn(new HttpHeaders());
 

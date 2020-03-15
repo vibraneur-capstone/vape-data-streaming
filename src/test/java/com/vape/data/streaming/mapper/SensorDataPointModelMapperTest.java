@@ -61,8 +61,8 @@ public class SensorDataPointModelMapperTest {
         // Assert
         assertAll("Ensure ok",
                 () -> assertEquals(dataPointModel.getSensorId(), "test"),
-                () -> assertEquals(dataPointModel.getData().get(0), mockData.get(0).doubleValue()),
-                () -> assertEquals(dataPointModel.getData().get(1), mockData.get(1).doubleValue())
+                () -> assertEquals(dataPointModel.getRaw().get(0), mockData.get(0).doubleValue()),
+                () -> assertEquals(dataPointModel.getRaw().get(1), mockData.get(1).doubleValue())
         );
     }
 
@@ -74,8 +74,8 @@ public class SensorDataPointModelMapperTest {
         dataPointOne.add(2.2);
         dataPointOne.add(3.2);
         dataPointOne.add(4.2);
-        sensorDataPointModelList.add(SensorDataPointModel.builder().data(dataPointOne).build());
-        sensorDataPointModelList.add(SensorDataPointModel.builder().data(dataPointTwo).build());
+        sensorDataPointModelList.add(SensorDataPointModel.builder().raw(dataPointOne).build());
+        sensorDataPointModelList.add(SensorDataPointModel.builder().raw(dataPointTwo).build());
         return sensorDataPointModelList;
     }
 }

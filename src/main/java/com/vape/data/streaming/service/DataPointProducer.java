@@ -44,7 +44,8 @@ public class DataPointProducer {
         DspDataPointModel savedDspDataPoint = dspDataPointModelRepository.save(dspDataPointModel);
         log.info(String.format("#### -> Publishing DSP data point for sensor data point id: %s ####", savedDspDataPoint.getSensorDataPointId()));
         String message = mapper.toJson(savedDspDataPoint);
-        this.simpMessagingTemplate.convertAndSend(WebSocketConfig.APP_DESTINATION_PREFIX + "/dsp/" + savedDspDataPoint.getSensorId(), message);
+        savedDspDataPoint.setFft(null);
+        this.simpMessagingTemplate.convertAndSend(WebSocketConfig.APP_DESTINATION_PREFIX + "/dsp/" + savedDspDataPoint.getSensorId(), mapper.toJson(savedDspDataPoint));
         publishMessage(KafkaTopic.DSP.toString(), message);
         return savedDspDataPoint;
     }
